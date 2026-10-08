@@ -1,0 +1,10 @@
+pandas>=2.0
+numpy>=1.24
+cantools>=39.0
+scikit-learn>=1.3
+joblib>=1.3
+
+# Optional: only needed if you connect realtime_pipeline.py to a real
+# CAN interface via realtime/can_stream.py's live_python_can(). Not
+# required for CSV replay mode.
+# python-can>=4.3

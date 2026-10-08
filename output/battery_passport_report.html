@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RE-TWIN — Digital Battery Passport & Assessment Certificate</title>
+  <style>
+    body { font-family: 'Helvetica Neue', Arial, sans-serif; background: #070b14; color: #f1f5f9; padding: 30px; margin: 0; }
+    .cert-card { max-width: 900px; margin: 0 auto; background: #0d1424; border: 2px solid rgba(0, 242, 254, 0.4); border-radius: 16px; padding: 36px; box-shadow: 0 10px 40px rgba(0,0,0,0.6); position: relative; }
+    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; }
+    .brand h1 { margin: 0; font-size: 26px; color: #00f2fe; letter-spacing: -0.5px; }
+    .brand p { margin: 4px 0 0; color: #94a3b8; font-size: 13px; text-transform: uppercase; }
+    .stamp { border: 2px solid #10b981; color: #10b981; font-size: 14px; font-weight: bold; padding: 6px 14px; border-radius: 8px; text-transform: uppercase; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 24px; }
+    .section { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 18px; border: 1px solid rgba(255,255,255,0.06); }
+    .section h3 { margin: 0 0 12px; font-size: 14px; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.5px; display:flex; justify-content:space-between; align-items:center; }
+    .cat-tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; background: rgba(0,242,254,0.15); color: #00f2fe; font-family: monospace; }
+    .row { display: flex; justify-content: space-between; font-size: 13px; padding: 6px 0; border-bottom: 1px dashed rgba(255,255,255,0.08); }
+    .row:last-child { border-bottom: none; }
+    .val { font-weight: 600; color: #f8fafc; font-family: monospace; }
+    .big-score { text-align: center; padding: 20px 0; background: linear-gradient(135deg, rgba(0,242,254,0.1), rgba(139,92,246,0.1)); border-radius: 12px; margin-top: 20px; border: 1px solid rgba(0,242,254,0.2); }
+    .score-val { font-size: 48px; font-weight: 800; color: #00f2fe; }
+    .score-lbl { font-size: 13px; color: #94a3b8; text-transform: uppercase; margin-top: 4px; }
+    .tier-box { background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; border-radius: 10px; padding: 14px; margin-top: 18px; text-align: center; color: #34d399; font-weight: 600; font-size: 15px; }
+    .list-box { margin-top: 16px; background: rgba(255,255,255,0.02); padding: 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06); font-size: 12px; line-height: 1.6; color: #cbd5e1; }
+    .disclaimer { margin-top: 24px; font-size: 11px; color: #64748b; line-height: 1.5; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px; }
+  </style>
+</head>
+<body>
+  <div class="cert-card">
+    <div class="header">
+      <div class="brand">
+        <h1>RE-TWIN Digital Battery Passport</h1>
+        <p>EU Regulation 2023/1542 Assessment Certificate</p>
+      </div>
+      <div class="stamp">CERTIFIED FOR REUSE</div>
+    </div>
+
+    <div class="big-score">
+      <div class="score-val">82.1 / 100</div>
+      <div class="score-lbl">Repurposing Score (RPS) • Grade A (Good / Commercial Grade)</div>
+    </div>
+
+    <div class="tier-box">
+      RECOMMENDED SECOND-LIFE DEPLOYMENT: Tier 2: Solar & Commercial Storage (C&I Peak Shaving / Smoothing)
+    </div>
+
+    <div class="grid">
+      <div class="section">
+        <h3>Battery Identification <span class="cat-tag">RECORDED DATA</span></h3>
+        <div class="row"><span>Passport UUID:</span><span class="val">DPP-EU-RE-TWIN-BAT-8S-50AH-001</span></div>
+        <div class="row"><span>Data Source:</span><span class="val" style="font-size:11px;">CAN Bus Telemetry (Synchronized Frame Log) + Physics-Informed 1-RC ECM</span></div>
+        <div class="row"><span>Pack Model:</span><span class="val">BAT-8S-50AH-001</span></div>
+        <div class="row"><span>Cell Chemistry:</span><span class="val">NMC 811 Lithium-Ion</span></div>
+        <div class="row"><span>Configuration:</span><span class="val">8S1P (8 Cells in Series)</span></div>
+        <div class="row"><span>Manufacture Year:</span><span class="val">2020</span></div>
+        <div class="row"><span>First-Life Vehicle:</span><span class="val">Urban Fleet Delivery Van (Decommissioned)</span></div>
+        <div class="row"><span>First-Life Mileage:</span><span class="val">142,500.0 km</span></div>
+      </div>
+
+      <div class="section">
+        <h3>Health & Capacity Audit <span class="cat-tag">AI & ESTIMATED</span></h3>
+        <div class="row"><span>State of Health (SOH):</span><span class="val">86.54%</span></div>
+        <div class="row"><span>Usable Capacity:</span><span class="val">43.27 Ah / 50.0 Ah</span></div>
+        <div class="row"><span>Usable Energy:</span><span class="val">1.385 kWh</span></div>
+        <div class="row"><span>Projected 2nd Life RUL:</span><span class="val">~1990 Cycles</span></div>
+        <div class="row"><span>Ohmic Resistance (R₀):</span><span class="val">26.653 mΩ</span></div>
+        <div class="row"><span>Charge Transfer (Rct):</span><span class="val">23.076 mΩ</span></div>
+        <div class="row"><span>Safety Status:</span><span class="val" style="color:#10b981;">NORMAL</span></div>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-top:16px;">
+      <div class="section">
+        <h3>Operating Condition <span class="cat-tag">TELEMETRY</span></h3>
+        <div class="row"><span>Pack Voltage:</span><span class="val">32.1 V</span></div>
+        <div class="row"><span>Mean Temperature:</span><span class="val">25.0 °C</span></div>
+        <div class="row"><span>Cell Imbalance:</span><span class="val">6.0 mV</span></div>
+        <div class="row"><span>Hardware Alarms:</span><span class="val">None (All Passed)</span></div>
+      </div>
+
+      <div class="section">
+        <h3>Circular Economy Impact <span class="cat-tag">SUSTAINABILITY</span></h3>
+        <div class="row"><span>Avoided GHG Footprint:</span><span class="val" style="color:#10b981;">103.9 kg CO₂e</span></div>
+        <div class="row"><span>Retained Nickel:</span><span class="val">1.0 kg</span></div>
+        <div class="row"><span>Retained Cobalt:</span><span class="val">0.25 kg</span></div>
+        <div class="row"><span>Retained Lithium:</span><span class="val">0.15 kg</span></div>
+      </div>
+    </div>
+
+    <div class="list-box">
+      <strong style="color:#f59e0b;">Operational Cautions & Warnings:</strong>
+      <ul style="margin: 6px 0 0 20px; padding:0;">
+        <li>Maintain continuous second-life discharge load ≤ 1.0C to prevent accelerated SEI layer growth.</li><li>Ensure ambient operating temperature is maintained between 10°C and 40°C during second-life service.</li><li>Active balancing recommended if cell voltage imbalance exceeds 15 mV.</li>
+      </ul>
+    </div>
+
+    <div class="list-box" style="margin-top:10px;">
+      <strong style="color:#38bdf8;">Technical Scope & Limitations:</strong>
+      <ul style="margin: 6px 0 0 20px; padding:0;">
+        <li>Demonstration SOH predictions are physics-calibrated and require certified cycler QA verification before high-voltage grid deployment.</li><li>Impedance spectroscopy parameters are model-simulated and do not replace laboratory EIS sensor measurements.</li><li>Remaining useful life (RUL) projections assume standard DoD (80%) and benign stationary thermal management.</li>
+      </ul>
+    </div>
+
+    <div class="disclaimer">
+      <strong>Scientific Integrity Notice:</strong> This digital battery passport is generated by RE-TWIN using operational CAN bus telemetry, Coulomb-counting integration, and 1-RC equivalent circuit physics models. EIS parameters and demo SOH curves are model-derived and must be complemented with physical QA cycler tests prior to commercial grid deployment.
+    </div>
+  </div>
+</body>
+</html>

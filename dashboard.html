@@ -1,0 +1,3935 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RE-TWIN — Intelligent Second-Life EV Battery Decision Intelligence Platform</title>
+
+  <!-- Premium Fonts: Inter, Outfit, JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root {
+      --bg-base: #030712;
+      --bg-sidebar: #060b18;
+      --bg-surface: #0a1024;
+      --bg-card: rgba(13, 22, 44, 0.78);
+      --bg-card-hover: rgba(18, 30, 60, 0.88);
+      --bg-glass: rgba(10, 16, 36, 0.75);
+
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(0, 242, 254, 0.35);
+      --border-cyan: rgba(0, 242, 254, 0.45);
+      --border-purple: rgba(139, 92, 246, 0.4);
+
+      --cyan: #00f2fe;
+      --cyan-glow: rgba(0, 242, 254, 0.35);
+      --teal: #06b6d4;
+      --blue: #3b82f6;
+      --emerald: #10b981;
+      --amber: #f59e0b;
+      --crimson: #ef4444;
+      --purple: #8b5cf6;
+      --pink: #ec4899;
+
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+
+      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-display: 'Outfit', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      --glow-cyan: 0 0 30px rgba(0, 242, 254, 0.3);
+      --glow-emerald: 0 0 30px rgba(16, 185, 129, 0.3);
+      --glow-purple: 0 0 30px rgba(139, 92, 246, 0.3);
+      --glow-crimson: 0 0 30px rgba(239, 68, 68, 0.35);
+
+      --radius-xl: 20px;
+      --radius-lg: 14px;
+      --radius-md: 10px;
+      --radius-sm: 6px;
+      --sidebar-width: 280px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-base);
+      background-image:
+        radial-gradient(circle at 10% 15%, rgba(0, 242, 254, 0.07) 0%, transparent 45%),
+        radial-gradient(circle at 85% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 50% 85%, rgba(16, 185, 129, 0.05) 0%, transparent 55%),
+        linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+      background-attachment: fixed;
+      color: var(--text-primary);
+      font-family: var(--font-main);
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+    }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-base);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 242, 254, 0.25);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--cyan);
+      box-shadow: var(--glow-cyan);
+    }
+
+    /* LAYOUT STRUCTURE */
+    #app-sidebar {
+      width: var(--sidebar-width);
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 120;
+      backdrop-filter: blur(24px);
+      box-shadow: 5px 0 30px rgba(0, 0, 0, 0.5);
+    }
+
+    #app-main {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR COMPONENT */
+    .sidebar-brand {
+      padding: 24px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      position: relative;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--glow-cyan);
+      position: relative;
+    }
+
+    .brand-icon svg {
+      width: 24px;
+      height: 24px;
+      fill: #fff;
+    }
+
+    .brand-info h1 {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      background: linear-gradient(90deg, #ffffff 20%, var(--cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.1;
+    }
+
+    .brand-info p {
+      font-size: 0.68rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .sidebar-nav {
+      padding: 20px 14px;
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-group-title {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      padding: 12px 12px 6px 12px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 14px;
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      text-decoration: none;
+      border: 1px solid transparent;
+      position: relative;
+    }
+
+    .nav-item svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+      opacity: 0.7;
+      transition: all 0.2s ease;
+    }
+
+    .nav-item:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.08);
+      transform: translateX(2px);
+    }
+
+    .nav-item.active {
+      color: var(--cyan);
+      background: linear-gradient(90deg, rgba(0, 242, 254, 0.12), rgba(0, 242, 254, 0.02));
+      border-color: rgba(0, 242, 254, 0.3);
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.1);
+    }
+
+    .nav-item.active svg {
+      opacity: 1;
+      fill: var(--cyan);
+    }
+
+    .sidebar-footer {
+      padding: 16px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .vehicle-card {
+      background: rgba(13, 22, 44, 0.8);
+      border: 1px solid var(--border-cyan);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--glow-cyan);
+    }
+
+    .vehicle-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: rgba(0, 242, 254, 0.15);
+      border: 1px solid var(--cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cyan);
+    }
+
+    .vehicle-details h4 {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .vehicle-details p {
+      font-size: 0.68rem;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+    }
+
+    /* TOP HUD HEADER */
+    header.hud-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      background: rgba(3, 7, 18, 0.92);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 14px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .breadcrumb span.active {
+      color: var(--text-primary);
+      font-weight: 700;
+      font-family: var(--font-display);
+    }
+
+    .header-badges {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .hud-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      background: rgba(13, 22, 44, 0.85);
+      border: 1px solid var(--border-subtle);
+      font-size: 0.72rem;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .hud-badge .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .hud-badge.live {
+      border-color: rgba(16, 185, 129, 0.4);
+      color: var(--emerald);
+    }
+
+    .hud-badge.live .dot {
+      background: var(--emerald);
+      box-shadow: 0 0 10px var(--emerald);
+    }
+
+    .hud-badge.model {
+      border-color: rgba(139, 92, 246, 0.4);
+      color: var(--purple);
+    }
+
+    .hud-badge.model .dot {
+      background: var(--purple);
+      box-shadow: 0 0 10px var(--purple);
+    }
+
+    .hud-badge.vehicle {
+      border-color: rgba(0, 242, 254, 0.4);
+      color: var(--cyan);
+    }
+
+    .hud-badge.vehicle .dot {
+      background: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan);
+    }
+
+    /* TELEMETRY SCRUBBER BAR */
+    .scrubber-bar {
+      background: rgba(6, 11, 24, 0.95);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 10px 28px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .play-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(0, 242, 254, 0.15);
+      border: 1px solid var(--cyan);
+      color: var(--cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: var(--glow-cyan);
+    }
+
+    .play-btn:hover {
+      background: var(--cyan);
+      color: var(--bg-base);
+    }
+
+    .play-btn svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    .scrubber-slider {
+      flex: 1;
+      min-width: 140px;
+      height: 6px;
+      accent-color: var(--cyan);
+      cursor: pointer;
+    }
+
+    .time-readout {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .speed-pills {
+      display: flex;
+      gap: 4px;
+    }
+
+    .speed-pill {
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      cursor: pointer;
+    }
+
+    .speed-pill.active {
+      background: rgba(0, 242, 254, 0.18);
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    .dataset-select {
+      background: rgba(13, 22, 44, 0.95);
+      border: 1px solid var(--border-cyan);
+      color: var(--text-primary);
+      padding: 5px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      outline: none;
+    }
+
+    /* MAIN CONTENT PAGES */
+    main.main-content {
+      padding: 28px;
+      max-width: 1750px;
+      width: 100%;
+      margin: 0 auto;
+      flex: 1;
+    }
+
+    .page {
+      display: none;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+    }
+
+    .page.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .page-header {
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .page-title-group h2 {
+      font-family: var(--font-display);
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .page-title-group p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    /* CARDS */
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .glass-card:hover {
+      border-color: rgba(0, 242, 254, 0.25);
+    }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-subtitle {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+    }
+
+    /* GRIDS */
+    .grid-4col {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .grid-3col {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 20px;
+    }
+
+    .grid-2col {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 20px;
+    }
+
+    .grid-hero {
+      display: grid;
+      grid-template-columns: 2.2fr 1fr;
+      gap: 20px;
+    }
+
+    /* KPI METRICS */
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      position: relative;
+    }
+
+    .kpi-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-weight: 700;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .kpi-value {
+      font-family: var(--font-display);
+      font-size: 2.3rem;
+      font-weight: 900;
+      color: var(--text-primary);
+      margin: 10px 0 6px 0;
+      line-height: 1;
+    }
+
+    .kpi-unit {
+      font-size: 1rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-left: 4px;
+    }
+
+    .kpi-sub {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    /* BATTERY HUD */
+    .battery-hud-container {
+      background: linear-gradient(145deg, rgba(13, 22, 44, 0.95), rgba(6, 11, 24, 0.98));
+      border: 1px solid var(--border-cyan);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--glow-cyan);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .battery-visual-body {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .battery-pack-illustration {
+      flex: 1;
+      min-width: 300px;
+      height: 200px;
+      border: 2px solid var(--cyan);
+      border-radius: 14px;
+      position: relative;
+      background: rgba(0, 242, 254, 0.03);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .cell-grid-matrix {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      width: 100%;
+      height: 100%;
+    }
+
+    .cell-block {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid var(--emerald);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 8px;
+    }
+
+    .cell-label {
+      font-size: 0.65rem;
+      font-family: var(--font-mono);
+      color: var(--text-secondary);
+    }
+
+    .cell-volt {
+      font-size: 0.85rem;
+      font-family: var(--font-mono);
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    /* TABLES */
+    .data-table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+    }
+
+    table.hud-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      text-align: left;
+    }
+
+    table.hud-table th {
+      background: rgba(13, 22, 44, 0.95);
+      padding: 12px 16px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    table.hud-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+    }
+
+    table.hud-table tr:hover {
+      background: rgba(0, 242, 254, 0.05);
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: var(--radius-md);
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      border: 1px solid transparent;
+      text-decoration: none;
+    }
+
+    .btn-cyan {
+      background: linear-gradient(135deg, var(--cyan), #00b4d8);
+      color: #030712;
+      box-shadow: var(--glow-cyan);
+    }
+
+    .btn-cyan:hover {
+      opacity: 0.95;
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: var(--border-subtle);
+      color: var(--text-primary);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    /* BADGES */
+    .tier-badge {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-weight: 800;
+      font-size: 0.74rem;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+    }
+
+    .tier-1 {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--emerald);
+      border: 1px solid var(--emerald);
+    }
+
+    .tier-2 {
+      background: rgba(0, 242, 254, 0.2);
+      color: var(--cyan);
+      border: 1px solid var(--cyan);
+    }
+
+    .tier-3 {
+      background: rgba(59, 130, 246, 0.2);
+      color: var(--blue);
+      border: 1px solid var(--blue);
+    }
+
+    .tier-4 {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--amber);
+      border: 1px solid var(--amber);
+    }
+
+    .tier-5 {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--crimson);
+      border: 1px solid var(--crimson);
+    }
+
+    .status-passed {
+      color: var(--emerald);
+      font-weight: 700;
+    }
+
+    .status-warning {
+      color: var(--amber);
+      font-weight: 700;
+    }
+
+    .status-failed {
+      color: var(--crimson);
+      font-weight: 700;
+    }
+
+    .status-unavailable {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* HEALTH & RISK WORKSTATION STYLES */
+    .prov-badge {
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      display: inline-block;
+    }
+
+    .prov-real {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: var(--emerald);
+    }
+
+    .prov-derived {
+      background: rgba(0, 242, 254, 0.15);
+      border: 1px solid rgba(0, 242, 254, 0.4);
+      color: var(--cyan);
+    }
+
+    .prov-simulated {
+      background: rgba(139, 92, 246, 0.15);
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      color: var(--purple);
+    }
+
+    .prov-model {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      color: var(--amber);
+    }
+
+    .status-tag {
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    .status-tag.normal {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--emerald);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .status-tag.watch {
+      background: rgba(0, 242, 254, 0.2);
+      color: var(--cyan);
+      border: 1px solid rgba(0, 242, 254, 0.4);
+    }
+
+    .status-tag.warning {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--amber);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    .status-tag.critical {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--crimson);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+    }
+
+    .vitals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .vital-card {
+      background: rgba(10, 16, 36, 0.85);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .vital-card:hover {
+      border-color: var(--border-cyan);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .vital-title {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .vital-value {
+      font-family: var(--font-display);
+      font-size: 1.8rem;
+      font-weight: 900;
+      margin: 8px 0 4px 0;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .vital-unit {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .vital-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+      font-size: 0.74rem;
+    }
+
+    .timeline-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .timeline-item {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid var(--border-subtle);
+      border-left: 3px solid var(--cyan);
+      border-radius: 8px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .timeline-item:hover,
+    .timeline-item.active {
+      background: rgba(0, 242, 254, 0.08);
+      border-color: var(--cyan);
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.15);
+    }
+
+    .risk-matrix-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 6px;
+      margin-top: 10px;
+    }
+
+    .risk-matrix-table th {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 4px;
+      text-align: center;
+    }
+
+    .risk-matrix-table td {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border-subtle);
+      border-radius: 6px;
+      height: 44px;
+      text-align: center;
+      vertical-align: middle;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .risk-matrix-table td.active-cell {
+      border-color: var(--cyan);
+      background: rgba(0, 242, 254, 0.12);
+      box-shadow: var(--glow-cyan);
+    }
+
+    .risk-marker {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: var(--glow-cyan);
+      display: inline-block;
+      animation: pulseMarker 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseMarker {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 0.9;
+      }
+
+      50% {
+        transform: scale(1.4);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- LEFT SIDEBAR NAVIGATION -->
+  <aside id="app-sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+        </svg>
+      </div>
+      <div class="brand-info">
+        <h1>RE-TWIN</h1>
+        <p>EV Battery Intelligence</p>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-group-title">Analytics Workstation</div>
+
+      <a class="nav-item" onclick="switchRoute('overview')" id="nav-overview">
+        <svg viewBox="0 0 24 24">
+          <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" />
+        </svg>
+        <span>Overview</span>
+      </a>
+
+      <a class="nav-item" onclick="switchRoute('twin')" id="nav-twin">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+        </svg>
+        <span>Battery Twin</span>
+      </a>
+
+      <a class="nav-item" onclick="switchRoute('telemetry')" id="nav-telemetry">
+        <svg viewBox="0 0 24 24">
+          <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z" />
+        </svg>
+        <span>CAN Telemetry</span>
+      </a>
+
+      <a class="nav-item" onclick="switchRoute('eis')" id="nav-eis">
+        <svg viewBox="0 0 24 24">
+          <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.09-4-4L2 15.66z" />
+        </svg>
+        <span>EIS Fingerprint</span>
+      </a>
+
+      <a class="nav-item" onclick="switchRoute('health')" id="nav-health">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-5.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" />
+        </svg>
+        <span>Health & Risk</span>
+      </a>
+
+      <div class="nav-group-title">Second-Life Decision</div>
+
+      <a class="nav-item active" onclick="switchRoute('secondlife')" id="nav-secondlife">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z" />
+        </svg>
+        <span>Second-Life Engine</span>
+      </a>
+
+      <a class="nav-item" onclick="switchRoute('passport')" id="nav-passport">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+        </svg>
+        <span>Battery Passport</span>
+      </a>
+
+      <a class="nav-item" onclick="switchRoute('simulator')" id="nav-simulator">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M15 9H9v6h6V9zm-2 4h-2v-2h2v2zm8-2V9h-2V7c0-1.1-.9-2-2-2h-2V3h-2v2h-2V3H9v2H7c-1.1 0-2 .9-2 2v2H3v2h2v2H3v2h2v2c0 1.1.9 2 2 2h2v2h2v-2h2v2h2v-2h2c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2zm-4 6H7V7h10v10z" />
+        </svg>
+        <span>What-If Simulator</span>
+      </a>
+
+      <div class="nav-group-title">System & Diagnostic</div>
+
+      <a class="nav-item" onclick="switchRoute('system')" id="nav-system">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" />
+        </svg>
+        <span>System Specs</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="vehicle-card">
+        <div class="vehicle-avatar">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z" />
+          </svg>
+        </div>
+        <div class="vehicle-details">
+          <h4>Smart Fortwo EV</h4>
+          <p>17.6 kWh • 93S1P</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN WRAPPER -->
+  <div id="app-main">
+
+    <!-- TOP HUD HEADER -->
+    <header class="hud-header">
+      <div class="header-left">
+        <div class="breadcrumb">
+          <span>RE-TWIN</span> / <span class="active" id="currentBreadcrumb">Second-Life Engine</span>
+        </div>
+      </div>
+
+      <div class="header-badges">
+        <div class="hud-badge vehicle">
+          <span class="dot"></span>
+          <span>Smart Fortwo ED (451 EV)</span>
+        </div>
+        <div class="hud-badge live">
+          <span class="dot"></span>
+          <span>Live Replay Stream</span>
+        </div>
+        <div class="hud-badge model">
+          <span class="dot"></span>
+          <span>SOH ML Predictor</span>
+        </div>
+        <a class="btn btn-cyan" style="padding: 6px 16px; font-size: 0.75rem;" onclick="switchRoute('passport')">
+          <span>Export Passport</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- TELEMETRY SCRUBBER BAR -->
+    <div class="scrubber-bar">
+      <div class="play-btn" id="playBtn" onclick="togglePlayPause()">
+        <svg id="playIcon" viewBox="0 0 24 24">
+          <path d="M8 5v14l11-7z" />
+        </svg>
+        <svg id="pauseIcon" viewBox="0 0 24 24" style="display:none;">
+          <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+        </svg>
+      </div>
+
+      <input type="range" class="scrubber-slider" id="scrubberSlider" min="0" max="100" value="0"
+        oninput="onSliderScrub(this.value)">
+
+      <div class="time-readout" id="timeReadout">Frame 0 / 0 (0.0s)</div>
+
+      <div class="speed-pills">
+        <button class="speed-pill" onclick="setSpeed(1)">1x</button>
+        <button class="speed-pill" onclick="setSpeed(5)">5x</button>
+        <button class="speed-pill" onclick="setSpeed(10)">10x</button>
+        <button class="speed-pill active" onclick="setSpeed(20)">20x</button>
+      </div>
+
+      <select class="dataset-select" id="datasetSelect" onchange="onDatasetSelected(this.value)">
+        <option value="output/realtime_fused_log.csv">Live Replay (Drive Cycle)</option>
+        <option value="output/digital_twin.csv">Batch Run (digital_twin.csv)</option>
+      </select>
+    </div>
+
+    <!-- ERROR BANNER -->
+    <div class="error-banner" id="errorBanner">
+      <span id="errorBannerText">Error loading telemetry data</span>
+      <span class="error-close" onclick="hideErrorBanner()">✕</span>
+    </div>
+
+    <!-- PAGES CONTENT -->
+    <main class="main-content">
+
+      <!-- PAGE 6: SECOND-LIFE DECISION INTELLIGENCE -->
+      <section class="page active" id="page-secondlife">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h2>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="var(--cyan)">
+                <path
+                  d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z" />
+              </svg>
+              Second-Life Decision Intelligence Engine
+            </h2>
+            <p>Data-driven suitability evaluation, safety gate audit, explainable "Why This / Why Not" analysis, and
+              degradation outlook.</p>
+          </div>
+        </div>
+
+        <!-- HERO DECISION BANNER -->
+        <div class="grid-hero" style="margin-bottom: 22px;">
+          <div class="glass-card"
+            style="background: linear-gradient(135deg, rgba(13, 22, 44, 0.95), rgba(7, 12, 24, 0.98)); border: 1px solid var(--border-cyan); box-shadow: var(--glow-cyan);">
+            <div class="card-title">
+              <span>Optimal Second-Life Recommendation</span>
+              <span class="tier-badge tier-2" id="heroTierBadge">Tier 2: Solar ESS</span>
+            </div>
+
+            <div
+              style="font-family: var(--font-display); font-size: 2rem; font-weight: 900; color: var(--cyan); margin-bottom: 12px;"
+              id="heroRecTitle">
+              Solar Energy Storage
+            </div>
+
+            <p style="font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px;"
+              id="heroRecSummary">
+              Battery possesses robust electrochemical capacity (43.26 Ah, 1.384 kWh) and healthy thermal/balance
+              margins.
+            </p>
+
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+              <div
+                style="background: rgba(15,23,42,0.8); padding: 12px 18px; border-radius: 10px; border: 1px solid var(--border-subtle);">
+                <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">REPURPOSING SCORE</div>
+                <div
+                  style="font-family: var(--font-display); font-size: 1.8rem; font-weight: 900; color: var(--emerald);"
+                  id="heroRpsVal">82.1 <span style="font-size: 0.9rem; color: var(--text-muted);">/ 100</span></div>
+              </div>
+
+              <div
+                style="background: rgba(15,23,42,0.8); padding: 12px 18px; border-radius: 10px; border: 1px solid var(--border-subtle);">
+                <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">DECISION CONFIDENCE</div>
+                <div style="font-family: var(--font-display); font-size: 1.8rem; font-weight: 900; color: var(--cyan);"
+                  id="heroConfVal">85.0% <span style="font-size: 0.75rem; color: var(--emerald);">HIGH</span></div>
+              </div>
+
+              <div
+                style="background: rgba(15,23,42,0.8); padding: 12px 18px; border-radius: 10px; border: 1px solid var(--border-subtle);">
+                <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">DATA EVIDENCE QUALITY</div>
+                <div
+                  style="font-family: var(--font-display); font-size: 1.8rem; font-weight: 900; color: var(--purple);"
+                  id="heroDataEvVal">90.0% <span style="font-size: 0.75rem; color: var(--purple);">VERIFIED</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SAFETY GATE CARD -->
+          <div class="glass-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div class="card-title">
+                <span>Safety Gate Interlock Audit</span>
+                <span class="hud-badge live" id="heroSafetyBadge">PASSED</span>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                <div style="font-size: 0.78rem; display: flex; justify-content: space-between;"><span>BMS Hardware
+                    Faults:</span><b style="color: var(--emerald);">0 Active</b></div>
+                <div style="font-size: 0.78rem; display: flex; justify-content: space-between;"><span>Max
+                    Temperature:</span><b style="color: var(--emerald);">25.3 °C (&lt;55.0°C)</b></div>
+                <div style="font-size: 0.78rem; display: flex; justify-content: space-between;"><span>Cell
+                    Imbalance:</span><b style="color: var(--emerald);">7.0 mV (&lt;50.0mV)</b></div>
+                <div style="font-size: 0.78rem; display: flex; justify-content: space-between;"><span>Safety
+                    Status:</span><b style="color: var(--emerald);">NORMAL</b></div>
+              </div>
+            </div>
+
+            <div
+              style="background: rgba(16, 185, 129, 0.1); border: 1px solid var(--emerald); border-radius: 8px; padding: 10px; font-size: 0.75rem; color: var(--emerald); text-align: center; font-weight: 600;">
+              ✓ Safety Gate Interlock Passed. Safe for Second-Life Deployment.
+            </div>
+          </div>
+        </div>
+
+        <!-- EXPLAINABLE WHY THIS / WHY NOT -->
+        <div class="grid-2col" style="margin-bottom: 22px;">
+
+          <!-- WHY THIS CARD -->
+          <div class="glass-card">
+            <div class="card-title" style="color: var(--emerald);">
+              <span>WHY THIS APPLICATION?</span>
+              <span class="card-subtitle">Passed Criteria & Health Margins</span>
+            </div>
+
+            <ul id="whyThisList"
+              style="list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 0.82rem; color: var(--text-secondary);">
+              <li style="display: flex; gap: 10px; align-items: flex-start;">
+                <span style="color: var(--emerald); font-weight: 900;">✓</span>
+                <span>SOH (86.5%) comfortably exceeds minimum 80.0% requirement (+6.5% margin).</span>
+              </li>
+              <li style="display: flex; gap: 10px; align-items: flex-start;">
+                <span style="color: var(--emerald); font-weight: 900;">✓</span>
+                <span>Remaining usable energy (1.38 kWh) satisfies demand (1.20 kWh).</span>
+              </li>
+              <li style="display: flex; gap: 10px; align-items: flex-start;">
+                <span style="color: var(--emerald); font-weight: 900;">✓</span>
+                <span>Cell voltage balance (7.0 mV) is within limit (20.0 mV).</span>
+              </li>
+              <li style="display: flex; gap: 10px; align-items: flex-start;">
+                <span style="color: var(--emerald); font-weight: 900;">✓</span>
+                <span>Estimated RUL of 1988 cycles satisfies project life requirement (> 1200 cycles).</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- WHY NOT CARD -->
+          <div class="glass-card">
+            <div class="card-title" style="color: var(--amber);">
+              <span>WHY NOT OTHER TIERS?</span>
+              <span class="card-subtitle">Limiting Factors & Deficits</span>
+            </div>
+
+            <div id="whyNotContainer"
+              style="display: flex; flex-direction: column; gap: 10px; font-size: 0.8rem; color: var(--text-secondary);">
+              <div style="background: rgba(15,23,42,0.6); padding: 10px; border-radius: 6px;">
+                <b style="color: var(--text-primary);">Home / UPS Backup:</b> Battery qualifies for higher-priority Tier
+                2 Solar Storage; allocating to Home UPS forfeits economic value.
+              </div>
+              <div style="background: rgba(15,23,42,0.6); padding: 10px; border-radius: 6px;">
+                <b style="color: var(--text-primary);">Recycling:</b> SOH (86.5%) retains high second-life utility;
+                direct recycling prematurely forfeits residual value.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- REQUIREMENT MARGINS TABLE -->
+        <div class="glass-card" style="margin-bottom: 22px;">
+          <div class="card-title">
+            <span>Requirement Margin Breakdown</span>
+            <span class="card-subtitle">Actual Value vs Technical Requirement</span>
+          </div>
+
+          <div class="data-table-wrapper">
+            <table class="hud-table">
+              <thead>
+                <tr>
+                  <th>Parameter</th>
+                  <th>Actual Value</th>
+                  <th>Required Value</th>
+                  <th>Margin (+/-)</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="marginsTableBody">
+                <tr>
+                  <td>SOH (%)</td>
+                  <td>86.5%</td>
+                  <td>≥ 80.0%</td>
+                  <td>+6.5%</td>
+                  <td><span class="status-passed">PASSED</span></td>
+                </tr>
+                <tr>
+                  <td>Usable Energy</td>
+                  <td>1.38 kWh</td>
+                  <td>≥ 1.20 kWh</td>
+                  <td>+0.18 kWh</td>
+                  <td><span class="status-passed">PASSED</span></td>
+                </tr>
+                <tr>
+                  <td>Continuous Power</td>
+                  <td>2.25 kW</td>
+                  <td>≥ 1.50 kW</td>
+                  <td>+0.75 kW</td>
+                  <td><span class="status-passed">PASSED</span></td>
+                </tr>
+                <tr>
+                  <td>Temperature</td>
+                  <td>25.3 °C</td>
+                  <td>[10.0°C, 45.0°C]</td>
+                  <td>Optimal</td>
+                  <td><span class="status-passed">PASSED</span></td>
+                </tr>
+                <tr>
+                  <td>Cell Imbalance</td>
+                  <td>7.0 mV</td>
+                  <td>≤ 20.0 mV</td>
+                  <td>+13.0 mV</td>
+                  <td><span class="status-passed">PASSED</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- DEGRADATION-AWARE PROJECTIONS & REFURBISHMENT ACTIONS -->
+        <div class="grid-2col">
+
+          <!-- DEGRADATION PROJECTION -->
+          <div class="glass-card">
+            <div class="card-title">
+              <span>Degradation-Aware Suitability</span>
+              <span class="hud-badge model">MODEL ESTIMATE</span>
+            </div>
+            <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 14px;">
+              Projected second-life SOH and application suitability under 0.5C gentle solar ESS duty cycle.
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <div
+                style="display: flex; justify-content: space-between; padding: 10px; background: rgba(15,23,42,0.6); border-radius: 6px;">
+                <span>Current:</span> <b style="color: var(--cyan);">86.5% SOH (RPS: 82.1) — Tier 2 Solar ESS</b>
+              </div>
+              <div
+                style="display: flex; justify-content: space-between; padding: 10px; background: rgba(15,23,42,0.6); border-radius: 6px;">
+                <span>12 Months:</span> <b>84.3% SOH (RPS: 78.6) — Tier 2 Solar ESS</b>
+              </div>
+              <div
+                style="display: flex; justify-content: space-between; padding: 10px; background: rgba(15,23,42,0.6); border-radius: 6px;">
+                <span>24 Months:</span> <b>82.1% SOH (RPS: 75.1) — Tier 2 Solar ESS</b>
+              </div>
+              <div
+                style="display: flex; justify-content: space-between; padding: 10px; background: rgba(15,23,42,0.6); border-radius: 6px;">
+                <span>36 Months:</span> <b style="color: var(--blue);">79.9% SOH (RPS: 71.6) — Tier 3 Home/UPS</b>
+              </div>
+            </div>
+          </div>
+
+          <!-- REFURBISHMENT ACTION PLAN -->
+          <div class="glass-card">
+            <div class="card-title">Recommended Pre-Deployment Maintenance</div>
+
+            <ul id="refurbList"
+              style="list-style: none; display: flex; flex-direction: column; gap: 10px; font-size: 0.8rem; color: var(--text-secondary);">
+              <li style="padding: 10px; background: rgba(15,23,42,0.6); border-radius: 6px;">
+                ✓ <b>Cell Voltage Balance:</b> Verified nominal (7.0 mV). No active balancing required.
+              </li>
+              <li style="padding: 10px; background: rgba(15,23,42,0.6); border-radius: 6px;">
+                ✓ <b>Thermal Inspection:</b> Nominal operating temperature confirmed (25.3°C).
+              </li>
+              <li style="padding: 10px; background: rgba(15,23,42,0.6); border-radius: 6px;">
+                ✓ <b>Capacity Validation:</b> Standard pre-deployment discharge test complete (43.26 Ah).
+              </li>
+              <li style="padding: 10px; background: rgba(15,23,42,0.6); border-radius: 6px;">
+                ✓ <b>BMS & Passport:</b> Registered on EU Digital Battery Passport QR database.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- PAGE 1: OVERVIEW -->
+      <section class="page" id="page-overview">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h2>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="var(--cyan)">
+                <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" />
+              </svg>
+              Executive Battery Analytics Workstation
+            </h2>
+            <p>Real-time telemetry monitoring, State of Health (SOH) tracking, electrochemical state, and operational
+              summary.</p>
+          </div>
+        </div>
+
+        <div class="grid-hero" style="margin-bottom: 22px;">
+          <div class="glass-card">
+            <div class="card-title">
+              <span>Primary Battery Telemetry Metrics</span>
+              <span class="hud-badge live">CAN 500kbps</span>
+            </div>
+
+            <div
+              style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-top: 15px;">
+              <div
+                style="background: rgba(15,23,42,0.8); padding: 14px; border-radius: 10px; border: 1px solid var(--border-cyan);">
+                <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">STATE OF HEALTH</div>
+                <div style="font-family: var(--font-display); font-size: 2rem; font-weight: 900; color: var(--cyan);"
+                  id="ovSoh">86.5%</div>
+                <div style="font-size: 0.75rem; color: var(--emerald);">Linear Reg Model</div>
+              </div>
+
+              <div
+                style="background: rgba(15,23,42,0.8); padding: 14px; border-radius: 10px; border: 1px solid var(--border-subtle);">
+                <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">STATE OF CHARGE</div>
+                <div style="font-family: var(--font-display); font-size: 2rem; font-weight: 900; color: var(--teal);"
+                  id="ovSoc">66.7%</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">44.0 Ah Usable</div>
+              </div>
+
+              <div
+                style="background: rgba(15,23,42,0.8); padding: 14px; border-radius: 10px; border: 1px solid var(--border-subtle);">
+                <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">PACK VOLTAGE</div>
+                <div style="font-family: var(--font-display); font-size: 2rem; font-weight: 900; color: var(--emerald);"
+                  id="ovVoltage">31.16 V</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">3.46 V / Cell</div>
+              </div>
+
+              <div
+                style="background: rgba(15,23,42,0.8); padding: 14px; border-radius: 10px; border: 1px solid var(--border-subtle);">
+                <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">PACK CURRENT</div>
+                <div style="font-family: var(--font-display); font-size: 2rem; font-weight: 900; color: var(--purple);"
+                  id="ovCurrent">1.9 A</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">0.04C Discharge</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-card" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div class="card-title">
+                <span>System Health & Safety Status</span>
+                <span class="hud-badge live" id="ovSafetyStatus">NORMAL</span>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 14px; font-size: 0.82rem;">
+                <div style="display: flex; justify-content: space-between;"><span>Mean Temperature:</span><b
+                    id="ovTemp">25.3 °C</b></div>
+                <div style="display: flex; justify-content: space-between;"><span>Cell Delta (ΔV):</span><b
+                    id="ovImb">7.0 mV</b></div>
+                <div style="display: flex; justify-content: space-between;"><span>Estimated RUL:</span><b
+                    id="ovRul">1,988 Cycles</b></div>
+                <div style="display: flex; justify-content: space-between;"><span>BMS Communication:</span><b
+                    style="color: var(--emerald);">Active (0 Errors)</b></div>
+              </div>
+            </div>
+            <button class="btn btn-cyan" style="width: 100%; margin-top: 15px;" onclick="switchRoute('secondlife')">Open
+              Second-Life Decision Engine →</button>
+          </div>
+        </div>
+
+        <div class="glass-card" style="margin-bottom: 22px;">
+          <div class="card-title">
+            <span>Real-Time CAN Telemetry Stream</span>
+            <span class="card-subtitle">Voltage & Current Duty Cycle</span>
+          </div>
+          <div style="height: 260px; position: relative;">
+            <canvas id="overviewChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 2: BATTERY TWIN -->
+      <section class="page" id="page-twin">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h2>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="var(--cyan)">
+                <path
+                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+              </svg>
+              Smart Fortwo Digital Battery Twin Topology
+            </h2>
+            <p>93S1P pack architectural model, module-level voltage balance matrix, and 1-RC ECM state.</p>
+          </div>
+        </div>
+
+        <div class="grid-2col" style="margin-bottom: 22px;">
+          <div class="glass-card">
+            <div class="card-title">
+              <span>93S1P Cell Voltage Imbalance Matrix</span>
+              <span class="card-subtitle">8 Pack Modules</span>
+            </div>
+            <div id="twinCellGrid"
+              style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 15px;">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-title">
+              <span>1-RC Equivalent Circuit Model (ECM)</span>
+              <span class="hud-badge model">Randles ECM</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px; font-size: 0.82rem;">
+              <div
+                style="background: rgba(15,23,42,0.6); padding: 12px; border-radius: 8px; display: flex; justify-content: space-between;">
+                <span>Ohmic Resistance (R₀):</span><b style="color: var(--cyan);" id="ecmR0">25.3 mΩ</b>
+              </div>
+              <div
+                style="background: rgba(15,23,42,0.6); padding: 12px; border-radius: 8px; display: flex; justify-content: space-between;">
+                <span>Charge Transfer Resistance (Rct):</span><b style="color: var(--teal);" id="ecmRct">21.9 mΩ</b>
+              </div>
+              <div
+                style="background: rgba(15,23,42,0.6); padding: 12px; border-radius: 8px; display: flex; justify-content: space-between;">
+                <span>Double Layer Capacitance (Cdl):</span><b style="color: var(--purple);" id="ecmCdl">1.92 F</b>
+              </div>
+              <div
+                style="background: rgba(15,23,42,0.6); padding: 12px; border-radius: 8px; display: flex; justify-content: space-between;">
+                <span>Open Circuit Voltage (VOCV):</span><b style="color: var(--emerald);" id="ecmVocv">31.22 V</b>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 3: CAN TELEMETRY -->
+      <section class="page" id="page-telemetry">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h2>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="var(--cyan)">
+                <path d="M16 6l2.29 2.29-4.88 4.88-4-4L2 16.59 3.41 18l6-6 4 4 6.3-6.29L22 12V6z" />
+              </svg>
+              Real-Time CAN Telemetry Bus Inspector
+            </h2>
+            <p>Live replay stream log parsing, physical parameter decoding, and signal time-series plots.</p>
+          </div>
+        </div>
+
+        <div class="glass-card" style="margin-bottom: 22px;">
+          <div class="card-title">
+            <span>CAN Bus Telemetry Signals</span>
+            <span class="card-subtitle">500 kbps Stream</span>
+          </div>
+          <div style="height: 280px; position: relative;">
+            <canvas id="telemetryChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 4: EIS LABORATORY & IMPEDANCE INTELLIGENCE -->
+      <section class="page" id="page-eis">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h2>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--cyan)">
+                <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.09-4-4L2 15.66z" />
+              </svg>
+              EIS Fingerprint & Impedance Intelligence Laboratory
+            </h2>
+            <p>Multi-frequency electrochemical impedance spectroscopy simulation, Randles 1-RC parameter extraction,
+              reference spectrum comparison, and EIS-derived health indicators.</p>
+          </div>
+        </div>
+
+        <!-- MANDATORY STATUS BAR & PROVENANCE BADGES -->
+        <div class="glass-card" style="margin-bottom: 22px; padding: 14px 20px; border-left: 4px solid var(--purple);">
+          <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 12px; font-size: 0.8rem; font-weight: 700;">
+              <span class="prov-badge prov-real">INPUT: SMART FORTWO CAN</span>
+              <span class="prov-badge prov-simulated">EIS TYPE: SIMULATED</span>
+              <span class="prov-badge prov-model">MODEL: 1-RC RANDLES ECM</span>
+            </div>
+            <div style="font-size: 0.74rem; color: var(--text-muted);">
+              Logarithmic Frequency Sweep: <b style="color: var(--cyan);">0.01 Hz → 10,000 Hz</b>
+            </div>
+          </div>
+        </div>
+
+        <!-- OPERATING STATE CONTEXT & SIMULATION CONTROLS -->
+        <div class="grid-hero" style="margin-bottom: 22px;">
+          <div class="glass-card">
+            <div class="card-title">
+              <span>Operating State Context</span>
+              <span class="prov-badge prov-real">REAL CAN DATA</span>
+            </div>
+            <div
+              style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px; text-align: center;">
+              <div style="background: rgba(15,23,42,0.7); padding: 12px; border-radius: 8px;">
+                <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700;">STATE OF CHARGE</div>
+                <div style="font-family: var(--font-display); font-size: 1.8rem; font-weight: 900; color: var(--cyan);"
+                  id="eisOpSoc">80.0%</div>
+                <div style="font-size: 0.68rem; color: var(--text-secondary);">CAN / Derived</div>
+              </div>
+              <div style="background: rgba(15,23,42,0.7); padding: 12px; border-radius: 8px;">
+                <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700;">TEMPERATURE</div>
+                <div style="font-family: var(--font-display); font-size: 1.8rem; font-weight: 900; color: var(--teal);"
+                  id="eisOpTemp">25.3 °C</div>
+                <div style="font-size: 0.68rem; color: var(--text-secondary);">CAN Thermistors</div>
+              </div>
+              <div style="background: rgba(15,23,42,0.7); padding: 12px; border-radius: 8px;">
+                <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700;">SOH USED BY MODEL</div>
+                <div
+                  style="font-family: var(--font-display); font-size: 1.8rem; font-weight: 900; color: var(--purple);"
+                  id="eisOpSoh">88.4%</div>
+                <div style="font-size: 0.68rem; color: var(--text-secondary);">Linear Reg Model</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-title">
+              <span>Interactive EIS Simulation Sandbox</span>
+              <span class="hud-badge model">ECM Sandbox</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+              <div>
+                <div
+                  style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary);">
+                  <span>Simulated SOH:</span> <b id="eisSliderSohLabel" style="color: var(--cyan);">88.4%</b>
+                </div>
+                <input type="range" id="eisSliderSoh" min="50" max="100" value="88"
+                  style="width: 100%; margin-top: 4px;" oninput="updateEisLaboratory()">
+              </div>
+              <div>
+                <div
+                  style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary);">
+                  <span>Simulated Temp (°C):</span> <b id="eisSliderTempLabel" style="color: var(--teal);">25.3 °C</b>
+                </div>
+                <input type="range" id="eisSliderTemp" min="0" max="50" value="25" style="width: 100%; margin-top: 4px;"
+                  oninput="updateEisLaboratory()">
+              </div>
+              <div
+                style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; margin-top: 4px;">
+                <label style="cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                  <input type="checkbox" id="eisToggleRef" checked onchange="updateEisLaboratory()">
+                  <span>Overlay Healthy Reference (100% SOH)</span>
+                </label>
+                <button class="btn btn-cyan" style="padding: 4px 10px; font-size: 0.7rem;"
+                  onclick="resetEisLaboratory()">Reset Baseline</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 SYNCHRONIZED VISUALIZATIONS -->
+        <div class="grid-2col" style="margin-bottom: 22px;">
+          <div class="glass-card" style="grid-column: span 2;">
+            <div class="card-title">
+              <span>1. Nyquist Impedance Spectrum Plot ($Z_{real}$ vs $-Z_{imag}$)</span>
+              <span class="hud-badge model">1-RC Randles Arc</span>
+            </div>
+            <div style="height: 280px; position: relative; margin-top: 10px;">
+              <canvas id="nyquistChart"></canvas>
+            </div>
+            <div
+              style="font-size: 0.72rem; color: var(--text-muted); margin-top: 8px; display: flex; justify-content: space-between;">
+              <span>X-axis: Zreal (mΩ) | Y-axis: -Zimag (mΩ)</span>
+              <span>Characteristic Frequency ($f_c$): <b style="color: var(--cyan);" id="eisFcLabel">3.76 Hz</b></span>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-title">
+              <span>2. Bode Magnitude Spectrum (|Z| vs Frequency)</span>
+              <span class="card-subtitle">Logarithmic Frequency Axis</span>
+            </div>
+            <div style="height: 230px; position: relative; margin-top: 10px;">
+              <canvas id="bodeMagnitudeChart"></canvas>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-title">
+              <span>3. Bode Phase Spectrum (Phase ° vs Frequency)</span>
+              <span class="card-subtitle">Logarithmic Frequency Axis</span>
+            </div>
+            <div style="height: 230px; position: relative; margin-top: 10px;">
+              <canvas id="bodePhaseChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- EIS FINGERPRINT & REFERENCE COMPARISON -->
+        <div class="grid-2col" style="margin-bottom: 22px;">
+          <div class="glass-card">
+            <div class="card-title">
+              <span>EIS Fingerprint & Extracted ECM Parameters</span>
+              <span class="prov-badge prov-model">MODEL-DERIVED / SIMULATED</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px;">
+              <div
+                style="background: rgba(15,23,42,0.7); padding: 12px; border-radius: 8px; border-left: 3px solid var(--cyan);">
+                <div style="font-size: 0.68rem; color: var(--text-muted); font-weight: 700;">OHMIC (R₀)</div>
+                <div style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; color: var(--cyan);"
+                  id="fpR0">25.3 mΩ</div>
+              </div>
+              <div
+                style="background: rgba(15,23,42,0.7); padding: 12px; border-radius: 8px; border-left: 3px solid var(--teal);">
+                <div style="font-size: 0.68rem; color: var(--text-muted); font-weight: 700;">CHARGE TRANSFER (Rct)</div>
+                <div style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; color: var(--teal);"
+                  id="fpRct">21.9 mΩ</div>
+              </div>
+              <div
+                style="background: rgba(15,23,42,0.7); padding: 12px; border-radius: 8px; border-left: 3px solid var(--purple);">
+                <div style="font-size: 0.68rem; color: var(--text-muted); font-weight: 700;">CAPACITANCE (Cdl)</div>
+                <div
+                  style="font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; color: var(--purple);"
+                  id="fpCdl">1.93 F</div>
+              </div>
+            </div>
+
+            <div style="margin-top: 14px;">
+              <b style="font-size: 0.76rem; color: var(--text-muted); text-transform: uppercase;">Selected Frequency
+                Impedance Indicators:</b>
+              <div style="overflow-x: auto; margin-top: 8px;">
+                <table style="width: 100%; font-size: 0.78rem; border-collapse: collapse;">
+                  <thead>
+                    <tr
+                      style="border-bottom: 1px solid var(--border-subtle); color: var(--text-muted); text-align: left;">
+                      <th style="padding: 6px;">Target Frequency</th>
+                      <th style="padding: 6px;">Magnitude |Z|</th>
+                      <th style="padding: 6px;">Phase Angle (°)</th>
+                    </tr>
+                  </thead>
+                  <tbody id="fpPointsTableBody">
+                    <!-- Populated by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-title">
+              <span>Reference vs Current Spectrum Comparison</span>
+              <span class="card-subtitle" id="deviationLabel">Model-based EIS fingerprint deviation</span>
+            </div>
+
+            <div style="overflow-x: auto; margin-top: 14px;">
+              <table style="width: 100%; font-size: 0.8rem; border-collapse: collapse;">
+                <thead>
+                  <tr
+                    style="border-bottom: 1px solid var(--border-subtle); color: var(--text-muted); text-align: left;">
+                    <th style="padding: 8px;">Parameter</th>
+                    <th style="padding: 8px;">Reference (100% SOH)</th>
+                    <th style="padding: 8px;">Current State</th>
+                    <th style="padding: 8px;">Deviation %</th>
+                  </tr>
+                </thead>
+                <tbody id="refComparisonTableBody">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+
+            <div
+              style="margin-top: 14px; padding: 10px; background: rgba(15,23,42,0.6); border-radius: 6px; font-size: 0.74rem; color: var(--text-secondary);"
+              id="deviationDisclaimer">
+              Model-based EIS fingerprint deviation represents mathematical 1-RC ECM state shifts relative to a defined
+              100% SOH reference model state. It is not an experimentally measured cell degradation value.
+            </div>
+          </div>
+        </div>
+
+        <!-- EIS HEALTH INDICATORS & PROVENANCE AUDIT -->
+        <div class="grid-2col" style="margin-bottom: 22px;">
+          <div class="glass-card">
+            <div class="card-title">
+              <span>EIS-Derived Diagnostic Indicators</span>
+              <span class="hud-badge model">Diagnostic Pipeline</span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px; font-size: 0.8rem;"
+              id="eisHealthIndicatorsList">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-title">
+              <span>Scientific Integrity & Data Provenance Audit</span>
+              <span class="hud-badge live">Transparency Audit</span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 14px; font-size: 0.78rem;">
+              <div
+                style="display: flex; justify-content: space-between; padding: 8px 12px; background: rgba(15,23,42,0.6); border-radius: 6px;">
+                <span>CAN Bus Operating Input:</span>
+                <span class="prov-badge prov-real">REAL CAN DATA</span>
+              </div>
+              <div
+                style="display: flex; justify-content: space-between; padding: 8px 12px; background: rgba(15,23,42,0.6); border-radius: 6px;">
+                <span>Impedance Calculation:</span>
+                <span class="prov-badge prov-simulated">SIMULATED EIS</span>
+              </div>
+              <div
+                style="display: flex; justify-content: space-between; padding: 8px 12px; background: rgba(15,23,42,0.6); border-radius: 6px;">
+                <span>Equivalent Circuit Model:</span>
+                <span class="prov-badge prov-model">1-RC RANDLES ECM</span>
+              </div>
+              <div
+                style="display: flex; justify-content: space-between; padding: 8px 12px; background: rgba(15,23,42,0.6); border-radius: 6px;">
+                <span>State of Health (SOH):</span>
+                <span class="prov-badge prov-model">MODEL ESTIMATE</span>
+              </div>
+            </div>
+
+            <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 14px; line-height: 1.4;">
+              Smart fortwo CAN telemetry provides vehicle operating state (SOC, Temperature). Impedance spectrum is
+              computed deterministically by the physics-informed 1-RC Randles ECM.
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- PAGE 5: HEALTH & RISK — BATTERY DIAGNOSTIC & PROGNOSTIC INTELLIGENCE CENTER -->
+      <section class="page" id="page-health">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h2>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="var(--cyan)">
+                <path
+                  d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-5.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" />
+              </svg>
+              Battery Diagnostic & Prognostic Intelligence Center
+            </h2>
+            <p>Comprehensive battery condition evaluation, degradation mechanism profiling, anomaly detection, stress
+              analysis, EIS health correlation, and risk intelligence.</p>
+          </div>
+        </div>
+
+        <!-- TOP SUMMARY KPI HERO -->
+        <div class="grid-hero" style="margin-bottom: 22px;">
+          <div class="glass-card" style="border: 1px solid var(--border-cyan);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <div>
+                <span
+                  style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Estimated
+                  State of Health (SOH)</span>
+                <div
+                  style="font-family: var(--font-display); font-size: 2.8rem; font-weight: 900; color: var(--cyan); line-height: 1.1; margin-top: 4px;"
+                  id="hrSohHero">88.4%</div>
+              </div>
+              <span class="prov-badge prov-model">MODEL ESTIMATE</span>
+            </div>
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border-subtle); font-size: 0.78rem;">
+              <span>Model Confidence: <b style="color: var(--emerald);" id="hrConfidenceHero">74%</b></span>
+              <span style="color: var(--text-secondary);" id="hrSohTrendHero">-0.42% / 100 cycles</span>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <div>
+                <span
+                  style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Remaining
+                  Useful Life (RUL)</span>
+                <div
+                  style="font-family: var(--font-display); font-size: 2.8rem; font-weight: 900; color: var(--teal); line-height: 1.1; margin-top: 4px;"
+                  id="hrRulHero">1,850</div>
+              </div>
+              <span class="prov-badge prov-model">MODEL ESTIMATE</span>
+            </div>
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border-subtle); font-size: 0.78rem;">
+              <span>Range: <b style="color: var(--text-primary);" id="hrRulRangeHero">1,620 – 2,080 cycles</b></span>
+              <span style="color: var(--text-secondary);">Target EOL: 60%</span>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <div>
+                <span
+                  style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Battery
+                  Anomaly Index</span>
+                <div
+                  style="font-family: var(--font-display); font-size: 2.8rem; font-weight: 900; color: var(--emerald); line-height: 1.1; margin-top: 4px;"
+                  id="hrAnomalyHero">23</div>
+              </div>
+              <span class="prov-badge prov-derived">DERIVED</span>
+            </div>
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border-subtle); font-size: 0.78rem;">
+              <span>Status: <b class="status-tag normal" id="hrAnomalyStatusHero">LOW ANOMALY RISK</b></span>
+              <span style="color: var(--text-secondary);">4 Sub-domains</span>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+              <div>
+                <span
+                  style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Current
+                  Risk Level</span>
+                <div
+                  style="font-family: var(--font-display); font-size: 2.2rem; font-weight: 900; color: var(--cyan); line-height: 1.2; margin-top: 4px;"
+                  id="hrRiskHero">LOW</div>
+              </div>
+              <span class="prov-badge prov-derived">DERIVED</span>
+            </div>
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border-subtle); font-size: 0.78rem;">
+              <span>Matrix Position: <b style="color: var(--emerald);" id="hrRiskMatrixHero">Med Sev / Low
+                  Prob</b></span>
+              <span style="color: var(--text-secondary);">5 Categories</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- FEATURE #1 — BATTERY VITALS -->
+        <div class="glass-card" style="margin-bottom: 22px;">
+          <div class="card-title">
+            <span>Battery Health Vitals Diagnostic Audit</span>
+            <span class="card-subtitle">Real-Time Operational Snapshot</span>
+          </div>
+
+          <div class="vitals-grid" style="margin-top: 16px;" id="vitalsGrid">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- FEATURE #2 & #3 — DEGRADATION ANALYSIS & DEGRADATION RATE -->
+        <div class="grid-2col" style="margin-bottom: 22px;">
+          <div class="glass-card">
+            <div class="card-title">
+              <span>Degradation Mechanism Profile</span>
+              <span class="hud-badge model" id="dominantPatternBadge">Resistance-associated</span>
+            </div>
+            <p style="font-size: 0.76rem; color: var(--text-secondary); margin-top: 6px;" id="degradationDisclaimer">
+              Evaluated using physics-inspired stress indicators. Does not assert micro-structural electrochemistry
+              without laboratory cell tear-down validation.
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 18px;"
+              id="degradationProfileBars">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-title">
+              <span>Degradation Rate & Historical SOH/Resistance Trend</span>
+              <span class="card-subtitle" id="degRateSubtitle">SOH 89.7% → 88.4% (-1.3%)</span>
+            </div>
+            <div style="height: 230px; position: relative; margin-top: 10px;">
+              <canvas id="degRateChart"></canvas>
+            </div>
+            <div
+              style="font-size: 0.74rem; color: var(--text-muted); margin-top: 10px; display: flex; justify-content: space-between;"
+              id="degRateNote">
+              <span>Estimated Pace: <b style="color: var(--cyan);" id="degPaceText">-0.42 % / 100 cycles</b></span>
+              <span>R₀ Growth: <b style="color: var(--purple);" id="degR0Text">+0.8 mΩ / 100 cycles</b></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- VIRTUAL BATTERY SYSTEM REPRESENTATION -->
+        <div class="glass-card" style="margin-bottom: 22px;">
+          <div class="card-title">
+            <span>Virtual Battery System Diagnostic Topology</span>
+            <span class="hud-badge live">System-Level Virtual Pack</span>
+          </div>
+          <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-top: 16px;"
+            id="virtualPackGrid">
+            <!-- 8 Pack Modules -->
+          </div>
+        </div>
+
+        <!-- FEATURE #12 & #13 — EXPLAINABLE SOH & HEALTH CHANGE COMPARISON -->
+        <div class="grid-2col" style="margin-bottom: 22px;">
+          <div class="glass-card">
+            <div class="card-title">
+              <span>Why Did Health Change? (Explainable SOH Feature Influences)</span>
+              <span class="hud-badge model">Linear Regression Attribution</span>
+            </div>
+            <div style="height: 250px; position: relative; margin-top: 10px;">
+              <canvas id="healthAttributionChart"></canvas>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-title">
+              <span>What Changed? (State Comparison Audit)</span>
+              <span class="card-subtitle">Current vs Previous Historical State</span>
+            </div>
+            <div style="overflow-x: auto; margin-top: 14px;">
+              <table style="width: 100%; font-size: 0.8rem; border-collapse: collapse;">
+                <thead>
+                  <tr
+                    style="border-bottom: 1px solid var(--border-subtle); color: var(--text-muted); text-align: left;">
+                    <th style="padding: 8px;">Metric</th>
+                    <th style="padding: 8px;">Previous State</th>
+                    <th style="padding: 8px;">Current State</th>
+                    <th style="padding: 8px;">Delta / Change</th>
+                  </tr>
+                </thead>
+                <tbody id="comparisonTableBody">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- FEATURE #4 & #5 — ANOMALY INTELLIGENCE & EVENT TIMELINE -->
+        <div class="grid-2col" style="margin-bottom: 22px;">
+          <div class="glass-card">
+            <div class="card-title">
+              <span>Battery Anomaly Intelligence Breakdown</span>
+              <span class="hud-badge live" id="anomalyIndexBadge">Index: 23 (LOW)</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 14px;"
+              id="anomalySubGrid">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-title">
+              <span>Interactive Anomaly Event Timeline</span>
+              <span class="card-subtitle">Click event to inspect point</span>
+            </div>
+            <div class="timeline-list" style="margin-top: 14px; max-height: 240px; overflow-y: auto;"
+              id="eventTimelineList">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- FEATURE #7 & #8 — THERMAL & ELECTRICAL BEHAVIOUR DIAGNOSTICS -->
+        <div class="grid-2col" style="margin-bottom: 22px;">
+          <div class="glass-card">
+            <div class="card-title">
+              <span>Thermal Behaviour & Rate of Rise (dT/dt) Diagnostics</span>
+              <span class="card-subtitle" id="thermalRateSubtitle">dT/dt = +0.10 °C/min</span>
+            </div>
+            <div style="height: 220px; position: relative; margin-top: 10px;">
+              <canvas id="thermalDiagnosticChart"></canvas>
+            </div>
+            <div
+              style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-top: 10px;">
+              <span>Mean: <b style="color: var(--cyan);" id="thMeanText">25.3 °C</b></span>
+              <span>Max: <b style="color: var(--amber);" id="thMaxText">28.5 °C</b></span>
+              <span>Spread: <b style="color: var(--emerald);" id="thSpreadText">3.0 °C</b></span>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-title">
+              <span>Electrical Stress & Voltage/Current Stability</span>
+              <span class="card-subtitle">Dynamic Power & Load Variations</span>
+            </div>
+            <div style="height: 220px; position: relative; margin-top: 10px;">
+              <canvas id="electricalDiagnosticChart"></canvas>
+            </div>
+            <div
+              style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-top: 10px;">
+              <span>Voltage Stability: <b style="color: var(--emerald);" id="elVoltStabText">High (±0.05 V)</b></span>
+              <span>Current Stability: <b style="color: var(--teal);" id="elCurrStabText">Stable</b></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- FEATURE #9 — EIS HEALTH INDICATORS -->
+        <div class="glass-card" style="margin-bottom: 22px;">
+          <div class="card-title">
+            <span>Electrochemical Impedance Spectroscopy (EIS) Health Correlations</span>
+            <span class="hud-badge model"
+              style="background: rgba(139,92,246,0.2); border-color: var(--purple); color: var(--purple);">
+              EIS TYPE: SIMULATED | MODEL: 1-RC RANDLES ECM
+            </span>
+          </div>
+
+          <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 16px;">
+            <div
+              style="background: rgba(15,23,42,0.6); padding: 14px; border-radius: 8px; border-left: 3px solid var(--cyan);">
+              <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">OHMIC RESISTANCE (R₀)</div>
+              <div style="font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; color: var(--cyan);"
+                id="eisR0Val">25.3 mΩ</div>
+              <div style="font-size: 0.74rem; color: var(--amber);" id="eisR0Dev">Baseline 20.1 mΩ (+25.8%)</div>
+            </div>
+
+            <div
+              style="background: rgba(15,23,42,0.6); padding: 14px; border-radius: 8px; border-left: 3px solid var(--teal);">
+              <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">CHARGE TRANSFER (Rct)</div>
+              <div style="font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; color: var(--teal);"
+                id="eisRctVal">21.9 mΩ</div>
+              <div style="font-size: 0.74rem; color: var(--emerald);" id="eisRctDev">Baseline 18.0 mΩ (+21.6%)</div>
+            </div>
+
+            <div
+              style="background: rgba(15,23,42,0.6); padding: 14px; border-radius: 8px; border-left: 3px solid var(--purple);">
+              <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">LOW-FREQ IMPEDANCE (|Z|)
+              </div>
+              <div style="font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; color: var(--purple);"
+                id="eisZVal">44.0 mΩ</div>
+              <div style="font-size: 0.74rem; color: var(--text-secondary);" id="eisPhaseVal">Phase Angle: -0.5°</div>
+            </div>
+
+            <div
+              style="background: rgba(15,23,42,0.6); padding: 14px; border-radius: 8px; border-left: 3px solid var(--emerald);">
+              <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">DOUBLE-LAYER CAP (Cdl)</div>
+              <div style="font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; color: var(--emerald);"
+                id="eisCdlVal">1.92 F</div>
+              <div style="font-size: 0.74rem; color: var(--emerald);">Interfacial SEI Active Surface</div>
+            </div>
+          </div>
+
+          <div
+            style="padding: 12px; background: rgba(15,23,42,0.7); border-radius: 8px; margin-top: 14px; font-size: 0.8rem; border-left: 3px solid var(--cyan);"
+            id="eisHealthExplanation">
+            Elevated internal resistance (R0 +25.8%, Rct +21.6% relative to baseline) is contributing to estimated
+            capacity degradation and operational heating.
+          </div>
+        </div>
+
+        <!-- FEATURE #14 & #15 — RISK INTELLIGENCE & EARLY WARNINGS -->
+        <div class="grid-2col" style="margin-bottom: 22px;">
+          <div class="glass-card">
+            <div class="card-title">
+              <span>Calculated 2D Risk Matrix & Categories</span>
+              <span class="hud-badge live" id="riskOverallBadge">LOW RISK</span>
+            </div>
+
+            <div style="margin-top: 10px;">
+              <table class="risk-matrix-table">
+                <thead>
+                  <tr>
+                    <th>Severity \ Prob</th>
+                    <th>Low</th>
+                    <th>Med</th>
+                    <th>High</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th style="text-align: left;">Critical</th>
+                    <td id="rm-3-1"></td>
+                    <td id="rm-3-2"></td>
+                    <td id="rm-3-3"></td>
+                  </tr>
+                  <tr>
+                    <th style="text-align: left;">High</th>
+                    <td id="rm-2-1"></td>
+                    <td id="rm-2-2"></td>
+                    <td id="rm-2-3"></td>
+                  </tr>
+                  <tr>
+                    <th style="text-align: left;">Medium</th>
+                    <td id="rm-1-1"></td>
+                    <td id="rm-1-2"></td>
+                    <td id="rm-1-3"></td>
+                  </tr>
+                  <tr>
+                    <th style="text-align: left;">Low</th>
+                    <td id="rm-0-1"></td>
+                    <td id="rm-0-2"></td>
+                    <td id="rm-0-3"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 14px; font-size: 0.78rem;"
+              id="riskCategoriesList">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-title">
+              <span>Early Warnings System Alerts</span>
+              <span class="hud-badge live">Predictive Safety Interlocks</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 14px;" id="earlyWarningsList">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <!-- FEATURE #10 & #11 — RUL FORECAST & HEALTH CONFIDENCE AUDIT -->
+        <div class="grid-2col" style="margin-bottom: 22px;">
+          <div class="glass-card">
+            <div class="card-title">
+              <span>Future Health & Multi-Cycle Degradation Forecast</span>
+              <span class="hud-badge model">5-Year Trajectory</span>
+            </div>
+            <div style="height: 230px; position: relative; margin-top: 10px;">
+              <canvas id="futureHealthChart"></canvas>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-title">
+              <span>Scientific Data Confidence & Uncertainty Audit</span>
+              <span class="hud-badge model" id="auditConfidenceBadge">Confidence: 74%</span>
+            </div>
+
+            <div style="margin-top: 14px; font-size: 0.8rem;">
+              <b style="color: var(--cyan);">Why is model confidence limited?</b>
+              <ul
+                style="margin-top: 8px; margin-left: 20px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 6px;"
+                id="limitingReasonsList">
+                <li>Telemetry window is currently limited to active CAN replay stream buffer.</li>
+                <li>Cell-level impedance spectroscopy is simulated via 1-RC Randles ECM.</li>
+                <li>SOH prediction uses Ordinary Least Squares linear regression model assumptions.</li>
+              </ul>
+            </div>
+
+            <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-subtle);">
+              <b style="color: var(--text-primary); font-size: 0.8rem;">Data Provenance Legend:</b>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+                <span class="prov-badge prov-real">REAL CAN DATA</span>
+                <span class="prov-badge prov-derived">DERIVED</span>
+                <span class="prov-badge prov-simulated">SIMULATED EIS</span>
+                <span class="prov-badge prov-model">MODEL ESTIMATE</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FEATURE #16 — RECOMMENDED DIAGNOSTIC ACTIONS -->
+        <div class="glass-card" style="margin-bottom: 22px;">
+          <div class="card-title">
+            <span>Recommended Engineering Diagnostic Investigations</span>
+            <span class="card-subtitle">Maintenance & Diagnostic Actions</span>
+          </div>
+
+          <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-top: 16px;"
+            id="diagnosticActionsGrid">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+      </section>
+
+      <!-- PAGE 7: BATTERY PASSPORT -->
+      <section class="page" id="page-passport">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h2>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="var(--cyan)">
+                <path
+                  d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+              </svg>
+              EU Digital Battery Passport
+            </h2>
+            <p>Official battery provenance record, material composition, carbon footprint, and second-life
+              certification.</p>
+          </div>
+        </div>
+
+        <div class="grid-2col">
+          <div class="glass-card">
+            <div class="card-title">
+              <span>Battery Passport Certificate</span>
+              <span class="hud-badge live">EU Reg 2023/1542</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.82rem; margin-top: 14px;">
+              <div style="display: flex; justify-content: space-between;"><span>Passport
+                  ID:</span><b>EU-BATT-2026-SMART451-93S</b></div>
+              <div style="display: flex; justify-content: space-between;"><span>Vehicle Model:</span><b>Smart Fortwo ED
+                  (451 EV)</b></div>
+              <div style="display: flex; justify-content: space-between;"><span>Capacity (Rated):</span><b>17.6 kWh
+                  (50.0 Ah)</b></div>
+              <div style="display: flex; justify-content: space-between;"><span>Chemistry:</span><b>LiNiCoMnO2 (NMC)</b>
+              </div>
+              <div style="display: flex; justify-content: space-between;"><span>Carbon Footprint:</span><b
+                  style="color: var(--emerald);">72 kg CO₂eq/kWh</b></div>
+              <div style="display: flex; justify-content: space-between;"><span>Recycled Content:</span><b>Ni: 15%, Co:
+                  12%, Li: 10%</b></div>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+              <a class="btn btn-cyan" style="flex: 1; text-align: center;" href="/api/passport" target="_blank">Download
+                JSON Passport</a>
+              <a class="btn btn-cyan"
+                style="flex: 1; text-align: center; background: rgba(139,92,246,0.2); border-color: var(--purple); color: var(--purple);"
+                href="/api/certificate" target="_blank">Open HTML Certificate</a>
+            </div>
+          </div>
+
+          <div class="glass-card"
+            style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+            <div style="background: #fff; padding: 16px; border-radius: 12px; margin-bottom: 12px;">
+              <img id="passportQrImg"
+                src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=http%3A%2F%2Flocalhost%3A8050%2Fapi%2Fcertificate"
+                alt="Passport QR" style="width: 140px; height: 140px;" />
+            </div>
+            <b style="color: var(--cyan); font-family: var(--font-display);">EU Digital Battery Passport QR Code</b>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px;">Scan to open second-life
+              provenance &amp; battery assessment certificate.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 8: WHAT-IF SIMULATOR -->
+      <section class="page" id="page-simulator">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h2>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="var(--cyan)">
+                <path
+                  d="M15 9H9v6h6V9zm-2 4h-2v-2h2v2zm8-2V9h-2V7c0-1.1-.9-2-2-2h-2V3h-2v2h-2V3H9v2H7c-1.1 0-2 .9-2 2v2H3v2h2v2H3v2h2v2c0 1.1.9 2 2 2h2v2h2v-2h2v2h2v-2h2c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2zm-4 6H7V7h10v10z" />
+              </svg>
+              What-If Battery Scenario Simulator
+            </h2>
+            <p>Simulate degradation trajectories, ambient temperatures, C-Rates, and second-life duty cycle profiles.
+            </p>
+          </div>
+        </div>
+
+        <div class="grid-2col" style="margin-bottom: 22px;">
+          <div class="glass-card">
+            <div class="card-title">Simulation Controls</div>
+            <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 14px;">
+              <div>
+                <label
+                  style="font-size: 0.78rem; color: var(--text-secondary); display: flex; justify-content: space-between;">
+                  <span>Baseline SOH:</span> <b id="simSohLabel">88.0%</b>
+                </label>
+                <input type="range" id="simSohSlider" min="50" max="100" value="88"
+                  style="width: 100%; margin-top: 6px;" oninput="updateSimulation()">
+              </div>
+
+              <div>
+                <label
+                  style="font-size: 0.78rem; color: var(--text-secondary); display: flex; justify-content: space-between;">
+                  <span>Ambient Temperature (°C):</span> <b id="simTempLabel">25.0 °C</b>
+                </label>
+                <input type="range" id="simTempSlider" min="10" max="50" value="25"
+                  style="width: 100%; margin-top: 6px;" oninput="updateSimulation()">
+              </div>
+
+              <div>
+                <label
+                  style="font-size: 0.78rem; color: var(--text-secondary); display: flex; justify-content: space-between;">
+                  <span>Duty Cycle C-Rate:</span> <b id="simCrateLabel">0.50 C</b>
+                </label>
+                <input type="range" id="simCrateSlider" min="1" max="30" value="5" step="1"
+                  style="width: 100%; margin-top: 6px;" oninput="updateSimulation()">
+              </div>
+
+              <div>
+                <label style="font-size: 0.78rem; color: var(--text-secondary);">Target Application:</label>
+                <select id="simAppSelect"
+                  style="width: 100%; background: #0f172a; color: #fff; border: 1px solid var(--border-subtle); padding: 8px; border-radius: 6px; margin-top: 6px;"
+                  onchange="updateSimulation()">
+                  <option value="Solar Energy Storage">Solar Energy Storage</option>
+                  <option value="Telecom Backup">Telecom Backup</option>
+                  <option value="Home / UPS Backup">Home / UPS Backup</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-card">
+            <div class="card-title">
+              <span>Multi-Year Projected SOH Trajectory</span>
+              <span class="hud-badge model">5-Year Forecast</span>
+            </div>
+            <div style="height: 250px; position: relative;">
+              <canvas id="simulatorChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 9: SYSTEM SPECS -->
+      <section class="page" id="page-system">
+        <div class="page-header">
+          <div class="page-title-group">
+            <h2>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="var(--cyan)">
+                <path
+                  d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z" />
+              </svg>
+              Smart Fortwo EV System Architecture Specifications
+            </h2>
+            <p>Battery pack hardware topology, BMS communications, safety interlocks, and platform specifications.</p>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <div class="card-title">Technical Specifications & Architecture</div>
+          <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 14px; font-size: 0.82rem;">
+            <div style="background: rgba(15,23,42,0.6); padding: 12px; border-radius: 8px;">
+              <span style="color: var(--text-muted);">Vehicle Model:</span><br><b>Smart Fortwo ED (451 EV)</b>
+            </div>
+            <div style="background: rgba(15,23,42,0.6); padding: 12px; border-radius: 8px;">
+              <span style="color: var(--text-muted);">Nominal Energy:</span><br><b>17.6 kWh</b>
+            </div>
+            <div style="background: rgba(15,23,42,0.6); padding: 12px; border-radius: 8px;">
+              <span style="color: var(--text-muted);">Pack Configuration:</span><br><b>93S1P (3 Blocks of 31 Cells)</b>
+            </div>
+            <div style="background: rgba(15,23,42,0.6); padding: 12px; border-radius: 8px;">
+              <span style="color: var(--text-muted);">Nominal Voltage:</span><br><b>344.1 V (3.7 V / Cell)</b>
+            </div>
+            <div style="background: rgba(15,23,42,0.6); padding: 12px; border-radius: 8px;">
+              <span style="color: var(--text-muted);">Rated Capacity:</span><br><b>50.0 Ah</b>
+            </div>
+            <div style="background: rgba(15,23,42,0.6); padding: 12px; border-radius: 8px;">
+              <span style="color: var(--text-muted);">BMS Protocol:</span><br><b>CAN 2.0B @ 500 kbps</b>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- JAVASCRIPT APP LOGIC -->
+  <script>
+    const AppState = {
+      telemetryData: [],
+      currentIndex: 0,
+      isPlaying: true,
+      playbackSpeed: 20,
+      timer: null,
+      charts: {}
+    };
+
+    function switchRoute(routeId) {
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      const activeNav = document.getElementById('nav-' + routeId);
+      if (activeNav) activeNav.classList.add('active');
+
+      document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+      const activePage = document.getElementById('page-' + routeId);
+      if (activePage) activePage.classList.add('active');
+
+      const breadcrumb = document.getElementById('currentBreadcrumb');
+      if (breadcrumb) {
+        breadcrumb.innerText = routeId.charAt(0).toUpperCase() + routeId.slice(1);
+      }
+
+      // Initialize charts when pages become active
+      setTimeout(() => {
+        if (routeId === 'overview') initOverviewChart();
+        if (routeId === 'telemetry') initTelemetryChart();
+        if (routeId === 'eis') fetchEisLaboratory();
+        if (routeId === 'health') fetchHealthRiskIntelligence();
+        if (routeId === 'simulator') updateSimulation();
+      }, 50);
+    }
+
+    function showErrorBanner(msg) {
+      const b = document.getElementById('errorBanner');
+      const t = document.getElementById('errorBannerText');
+      if (b && t) { t.innerText = msg; b.classList.add('active'); }
+    }
+
+    function hideErrorBanner() {
+      const b = document.getElementById('errorBanner');
+      if (b) b.classList.remove('active');
+    }
+
+    function fetchSecondLifeDecision(soh, temp, imbMv) {
+      fetch(`/api/second-life-decision?soh=${soh}&temp=${temp}&imb=${imbMv}`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.recommended_application) {
+            document.getElementById('heroRecTitle').innerText = data.recommended_application;
+            document.getElementById('heroRecSummary').innerText = data.recommendation_summary;
+            document.getElementById('heroRpsVal').innerHTML = `${data.repurposing_score.toFixed(1)} <span style="font-size: 0.9rem; color: var(--text-muted);">/ 100</span>`;
+            document.getElementById('heroConfVal').innerHTML = `${data.decision_confidence.toFixed(1)}% <span style="font-size: 0.75rem; color: var(--emerald);">HIGH</span>`;
+            document.getElementById('heroDataEvVal').innerHTML = `${data.data_confidence.toFixed(1)}% <span style="font-size: 0.75rem; color: var(--purple);">VERIFIED</span>`;
+
+            // Why This
+            if (data.why_this && data.why_this.length > 0) {
+              let html = '';
+              data.why_this.forEach(item => {
+                html += `<li style="display: flex; gap: 10px; align-items: flex-start;"><span style="color: var(--emerald); font-weight: 900;">✓</span><span>${item}</span></li>`;
+              });
+              document.getElementById('whyThisList').innerHTML = html;
+            }
+
+            // Why Not
+            if (data.why_not) {
+              let html = '';
+              for (const [app, list] of Object.entries(data.why_not)) {
+                html += `<div style="background: rgba(15,23,42,0.6); padding: 10px; border-radius: 6px;"><b style="color: var(--text-primary);">${app}:</b> ${list.join(' ')}</div>`;
+              }
+              document.getElementById('whyNotContainer').innerHTML = html;
+            }
+
+            // Refurbishment Actions
+            if (data.refurbishment_actions && data.refurbishment_actions.length > 0) {
+              let html = '';
+              data.refurbishment_actions.forEach(action => {
+                html += `<li style="padding: 10px; background: rgba(15,23,42,0.6); border-radius: 6px;">${action}</li>`;
+              });
+              document.getElementById('refurbList').innerHTML = html;
+            }
+          }
+        })
+        .catch(err => {
+          console.error("Second-life API fetch error:", err);
+        });
+    }
+
+    function renderCellGrid(imbMv) {
+      const grid = document.getElementById('twinCellGrid');
+      if (!grid) return;
+      let html = '';
+      for (let i = 1; i <= 8; i++) {
+        const v = (3.45 + (Math.sin(i) * 0.002)).toFixed(3);
+        const status = imbMv > 15 ? 'warning' : 'passed';
+        html += `
+          <div style="background: rgba(15,23,42,0.8); border: 1px solid var(--border-subtle); padding: 10px; border-radius: 6px; text-align: center;">
+            <div style="font-size: 0.7rem; color: var(--text-muted);">MODULE ${i}</div>
+            <div style="font-weight: 700; color: var(--cyan); font-size: 0.95rem; margin-top: 4px;">${v} V</div>
+            <div style="font-size: 0.65rem; color: var(--emerald); margin-top: 2px;">BALANCED</div>
+          </div>
+        `;
+      }
+      grid.innerHTML = html;
+    }
+
+    function renderFrame(idx) {
+      if (!AppState.telemetryData || AppState.telemetryData.length === 0) return;
+      const row = AppState.telemetryData[idx];
+      if (!row) return;
+
+      const sohRaw = row.SOH_used || row.SOH || 0.865;
+      const soh = sohRaw > 1 ? sohRaw / 100.0 : sohRaw;
+      const temp = row.TempMean || 25.3;
+      const imbMv = (row.CellVoltageImbalance || 0.007) * 1000.0;
+      const voltage = row.PackVoltage || 31.16;
+      const current = row.PackCurrent || 1.9;
+      const soc = row.SOC || 66.7;
+
+      // Update Overview Page KPIs
+      document.getElementById('ovSoh').innerText = `${(soh * 100).toFixed(1)}%`;
+      document.getElementById('ovSoc').innerText = `${soc.toFixed(1)}%`;
+      document.getElementById('ovVoltage').innerText = `${voltage.toFixed(2)} V`;
+      document.getElementById('ovCurrent').innerText = `${current.toFixed(1)} A`;
+      document.getElementById('ovTemp').innerText = `${temp.toFixed(1)} °C`;
+      document.getElementById('ovImb').innerText = `${imbMv.toFixed(1)} mV`;
+
+      // Update Cell Grid
+      renderCellGrid(imbMv);
+
+      fetchSecondLifeDecision(soh, temp, imbMv);
+
+      const pct = (idx / (AppState.telemetryData.length - 1)) * 100.0;
+      document.getElementById('scrubberSlider').value = pct;
+      document.getElementById('timeReadout').innerText = `Frame ${idx + 1} / ${AppState.telemetryData.length}`;
+    }
+
+    function safeCreateChart(ctxId, config) {
+      const ctx = document.getElementById(ctxId);
+      if (!ctx) return null;
+
+      // If Chart.js is loaded from CDN, use standard Chart.js
+      if (typeof Chart !== 'undefined') {
+        try {
+          return new Chart(ctx, config);
+        } catch (e) {
+          console.warn(`Chart.js error on ${ctxId}:`, e);
+        }
+      }
+
+      // Fallback HTML5 Canvas 2D Renderer if Chart.js CDN is blocked
+      const canvas = ctx;
+      const c2d = canvas.getContext('2d');
+      if (!c2d) return null;
+
+      // Set internal canvas resolution
+      canvas.width = canvas.parentElement ? canvas.parentElement.clientWidth : 600;
+      canvas.height = canvas.parentElement ? canvas.parentElement.clientHeight : 260;
+
+      const w = canvas.width;
+      const h = canvas.height;
+      c2d.clearRect(0, 0, w, h);
+
+      const datasets = config.data && config.data.datasets ? config.data.datasets : [];
+      const labels = config.data && config.data.labels ? config.data.labels : [];
+      if (datasets.length === 0) return null;
+
+      // Handle Horizontal / Vertical Bar Chart Fallback
+      if (config.type === 'bar') {
+        const ds = datasets[0] || {};
+        const data = ds.data || [];
+        const bgColors = ds.backgroundColor || '#00f2fe';
+        const numItems = data.length;
+        if (numItems === 0) return null;
+
+        const maxAbs = Math.max(...data.map(v => Math.abs(v)), 0.001);
+        const barHeight = Math.min(26, (h - 40) / numItems);
+        const zeroX = w * 0.45;
+
+        // Draw Zero Line
+        c2d.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        c2d.lineWidth = 1;
+        c2d.beginPath();
+        c2d.moveTo(zeroX, 10);
+        c2d.lineTo(zeroX, h - 10);
+        c2d.stroke();
+
+        data.forEach((val, i) => {
+          const y = 20 + i * (barHeight + 8);
+          const barW = (val / (maxAbs * 1.25)) * (w * 0.4);
+          const color = Array.isArray(bgColors) ? bgColors[i % bgColors.length] : bgColors;
+
+          // Label Text
+          c2d.fillStyle = '#94a3b8';
+          c2d.font = '11px sans-serif';
+          c2d.textAlign = 'right';
+          c2d.fillText(labels[i] || `Feat ${i + 1}`, zeroX - 10, y + barHeight * 0.7);
+
+          // Bar Rect
+          c2d.fillStyle = color;
+          if (barW >= 0) {
+            c2d.fillRect(zeroX, y, barW, barHeight);
+          } else {
+            c2d.fillRect(zeroX + barW, y, -barW, barHeight);
+          }
+
+          // Value Label
+          c2d.fillStyle = '#ffffff';
+          c2d.textAlign = val >= 0 ? 'left' : 'right';
+          c2d.fillText(`${val > 0 ? '+' : ''}${val.toFixed(2)}%`, zeroX + barW + (val >= 0 ? 6 : -6), y + barHeight * 0.7);
+        });
+
+        return {
+          destroy: function () { c2d.clearRect(0, 0, w, h); },
+          update: function () { },
+          resize: function () { }
+        };
+      }
+
+      // Draw Grid Lines for Line / Scatter Charts
+      c2d.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+      c2d.lineWidth = 1;
+      for (let y = 30; y < h - 30; y += 40) {
+        c2d.beginPath();
+        c2d.moveTo(40, y);
+        c2d.lineTo(w - 20, y);
+        c2d.stroke();
+      }
+
+      datasets.forEach((ds, dsIdx) => {
+        const data = ds.data || [];
+        if (data.length === 0) return;
+
+        c2d.strokeStyle = ds.borderColor || (dsIdx === 0 ? '#00f2fe' : '#8b5cf6');
+        c2d.lineWidth = 2;
+
+        let numData = data.map(d => (typeof d === 'object' && d !== null ? (d.y !== undefined ? d.y : d.x) : d));
+        let minVal = Math.min(...numData);
+        let maxVal = Math.max(...numData);
+        if (minVal === maxVal) { minVal -= 1; maxVal += 1; }
+
+        const stepX = (w - 70) / Math.max(1, data.length - 1);
+        c2d.beginPath();
+        data.forEach((val, i) => {
+          const num = typeof val === 'object' && val !== null ? (val.y !== undefined ? val.y : val.x) : val;
+          const x = 50 + i * stepX;
+          const y = (h - 40) - ((num - minVal) / (maxVal - minVal)) * (h - 70);
+          if (i === 0) c2d.moveTo(x, y);
+          else c2d.lineTo(x, y);
+        });
+        c2d.stroke();
+
+        // Draw data points
+        c2d.fillStyle = ds.borderColor || '#00f2fe';
+        data.forEach((val, i) => {
+          const num = typeof val === 'object' && val !== null ? (val.y !== undefined ? val.y : val.x) : val;
+          const x = 50 + i * stepX;
+          const y = (h - 40) - ((num - minVal) / (maxVal - minVal)) * (h - 70);
+          c2d.beginPath();
+          c2d.arc(x, y, 3, 0, Math.PI * 2);
+          c2d.fill();
+        });
+      });
+
+      return {
+        destroy: function () { c2d.clearRect(0, 0, w, h); },
+        update: function () { safeCreateChart(ctxId, config); },
+        resize: function () { }
+      };
+    }
+
+    function initOverviewChart() {
+      const ctx = document.getElementById('overviewChart');
+      if (!ctx) return;
+      if (AppState.charts.overview) AppState.charts.overview.destroy();
+
+      const sliceData = AppState.telemetryData.length > 0 ? AppState.telemetryData.slice(0, 60) : Array.from({ length: 40 }, (_, i) => ({ PackVoltage: 31.2 + Math.sin(i * 0.2) * 0.4, PackCurrent: 2.0 + Math.cos(i * 0.2) * 1.5 }));
+      const labels = sliceData.map((_, i) => (i * 0.5).toFixed(1) + 's');
+      const vData = sliceData.map(r => r.PackVoltage || 31.2);
+      const iData = sliceData.map(r => r.PackCurrent || 2.0);
+
+      AppState.charts.overview = safeCreateChart('overviewChart', {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            { label: 'Pack Voltage (V)', data: vData, borderColor: '#00f2fe', backgroundColor: 'rgba(0,242,254,0.1)', fill: true, yAxisID: 'y' },
+            { label: 'Pack Current (A)', data: iData, borderColor: '#8b5cf6', backgroundColor: 'transparent', yAxisID: 'y1' }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { ticks: { color: '#94a3b8' } },
+            y: { ticks: { color: '#00f2fe' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+            y1: { position: 'right', ticks: { color: '#8b5cf6' }, grid: { drawOnChartArea: false } }
+          }
+        }
+      });
+    }
+
+    function initTelemetryChart() {
+      const ctx = document.getElementById('telemetryChart');
+      if (!ctx) return;
+      if (AppState.charts.telemetry) AppState.charts.telemetry.destroy();
+
+      const sliceData = AppState.telemetryData.length > 0 ? AppState.telemetryData.slice(0, 60) : Array.from({ length: 40 }, (_, i) => ({ TempMean: 25.0 + Math.sin(i * 0.1) * 1.2 }));
+      const labels = sliceData.map((_, i) => (i * 0.5).toFixed(1) + 's');
+      const tempCard = sliceData.map(r => r.TempMean || 25.3);
+
+      AppState.charts.telemetry = safeCreateChart('telemetryChart', {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            { label: 'Pack Temperature (°C)', data: tempCard, borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.1)', fill: true }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { ticks: { color: '#94a3b8' } },
+            y: { ticks: { color: '#06b6d4' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+          }
+        }
+      });
+    }
+
+    // ==========================================
+    // EIS LABORATORY & IMPEDANCE INTELLIGENCE
+    // ==========================================
+
+    let lastEisLaboratoryData = null;
+
+    function fetchEisLaboratory(customSoh = null, customTemp = null) {
+      let url = '/api/eis-laboratory';
+      const params = [];
+      if (customSoh !== null) params.push(`soh=${customSoh}`);
+      if (customTemp !== null) params.push(`temp=${customTemp}`);
+      if (params.length > 0) url += '?' + params.join('&');
+
+      fetch(url)
+        .then(r => r.json())
+        .then(data => {
+          lastEisLaboratoryData = data;
+          renderEisLaboratoryWorkstation(data);
+        })
+        .catch(err => {
+          console.error("EIS Laboratory API fetch failed:", err);
+        });
+    }
+
+    function updateEisLaboratory() {
+      const sohSlider = document.getElementById('eisSliderSoh');
+      const tempSlider = document.getElementById('eisSliderTemp');
+      if (!sohSlider || !tempSlider) return;
+
+      const soh = parseFloat(sohSlider.value);
+      const temp = parseFloat(tempSlider.value);
+
+      document.getElementById('eisSliderSohLabel').innerText = `${soh.toFixed(1)}%`;
+      document.getElementById('eisSliderTempLabel').innerText = `${temp.toFixed(1)} °C`;
+
+      fetchEisLaboratory(soh, temp);
+    }
+
+    function resetEisLaboratory() {
+      const sohSlider = document.getElementById('eisSliderSoh');
+      const tempSlider = document.getElementById('eisSliderTemp');
+      const toggleRef = document.getElementById('eisToggleRef');
+
+      if (sohSlider) sohSlider.value = 88;
+      if (tempSlider) tempSlider.value = 25;
+      if (toggleRef) toggleRef.checked = true;
+
+      document.getElementById('eisSliderSohLabel').innerText = `88.0%`;
+      document.getElementById('eisSliderTempLabel').innerText = `25.0 °C`;
+
+      fetchEisLaboratory();
+    }
+
+    function renderEisLaboratoryWorkstation(data) {
+      if (!data) return;
+
+      // 1. Operating State Context
+      if (data.operating_state) {
+        document.getElementById('eisOpSoc').innerText = `${data.operating_state.soc_pct.toFixed(1)}%`;
+        document.getElementById('eisOpTemp').innerText = `${data.operating_state.temp_c.toFixed(1)} °C`;
+        document.getElementById('eisOpSoh').innerText = `${data.operating_state.soh_pct.toFixed(1)}%`;
+      }
+
+      const showRef = document.getElementById('eisToggleRef')?.checked ?? true;
+
+      // 2. Render 3 Synchronized Plots
+      renderNyquistPlot(data.spectrum, showRef ? data.reference_spectrum : null);
+      renderBodeMagnitudePlot(data.spectrum, showRef ? data.reference_spectrum : null);
+      renderBodePhasePlot(data.spectrum, showRef ? data.reference_spectrum : null);
+
+      // 3. Extracted Fingerprint & ECM
+      if (data.fingerprint) {
+        const fp = data.fingerprint;
+        document.getElementById('eisFcLabel').innerText = `${fp.fc_hz.toFixed(2)} Hz`;
+        document.getElementById('fpR0').innerText = `${fp.r0_mohm.toFixed(2)} mΩ`;
+        document.getElementById('fpRct').innerText = `${fp.rct_mohm.toFixed(2)} mΩ`;
+        document.getElementById('fpCdl').innerText = `${fp.cdl_farad.toFixed(2)} F`;
+
+        renderFingerprintPointsTable(fp.selected_points);
+      }
+
+      // 4. Reference Comparison
+      if (data.reference_comparison) {
+        renderReferenceComparisonTable(data.reference_comparison);
+      }
+
+      // 5. Diagnostic Indicators
+      if (data.health_indicators) {
+        renderEisDiagnosticIndicators(data.health_indicators);
+      }
+    }
+
+    function renderNyquistPlot(spectrum, refSpectrum) {
+      const ctx = document.getElementById('nyquistChart');
+      if (!ctx) return;
+      if (AppState.charts.nyquist) AppState.charts.nyquist.destroy();
+
+      const currentPoints = (spectrum || []).map(pt => ({ x: pt.z_real_mohm, y: pt.z_imag_neg_mohm }));
+      const datasets = [{
+        label: 'Current / Simulated EIS Spectrum',
+        data: currentPoints,
+        borderColor: '#00f2fe',
+        backgroundColor: '#00f2fe',
+        showLine: true,
+        borderWidth: 2.5,
+        pointRadius: 2.5,
+        tension: 0.3
+      }];
+
+      if (refSpectrum && refSpectrum.length > 0) {
+        const refPoints = refSpectrum.map(pt => ({ x: pt.z_real_mohm, y: pt.z_imag_neg_mohm }));
+        datasets.push({
+          label: '100% SOH Reference (Baseline)',
+          data: refPoints,
+          borderColor: '#64748b',
+          backgroundColor: '#64748b',
+          borderDash: [5, 5],
+          showLine: true,
+          borderWidth: 1.5,
+          pointRadius: 1
+        });
+      }
+
+      AppState.charts.nyquist = safeCreateChart('nyquistChart', {
+        type: 'scatter',
+        data: { datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true, labels: { color: '#94a3b8', font: { size: 11 } } },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => `Zreal: ${ctx.parsed.x.toFixed(2)} mΩ, -Zimag: ${ctx.parsed.y.toFixed(2)} mΩ`
+              }
+            }
+          },
+          scales: {
+            x: { title: { display: true, text: 'Zreal (mΩ)', color: '#94a3b8' }, ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+            y: { title: { display: true, text: '-Zimag (mΩ)', color: '#94a3b8' }, ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+          }
+        }
+      });
+    }
+
+    function renderBodeMagnitudePlot(spectrum, refSpectrum) {
+      const ctx = document.getElementById('bodeMagnitudeChart');
+      if (!ctx) return;
+      if (AppState.charts.bodeMag) AppState.charts.bodeMag.destroy();
+
+      const currentPoints = (spectrum || []).map(pt => ({ x: pt.freq_hz, y: pt.z_mag_mohm }));
+      const datasets = [{
+        label: 'Current |Z| (mΩ)',
+        data: currentPoints,
+        borderColor: '#10b981',
+        backgroundColor: '#10b981',
+        showLine: true,
+        borderWidth: 2,
+        pointRadius: 2,
+        tension: 0.3
+      }];
+
+      if (refSpectrum && refSpectrum.length > 0) {
+        const refPoints = refSpectrum.map(pt => ({ x: pt.freq_hz, y: pt.z_mag_mohm }));
+        datasets.push({
+          label: 'Ref |Z| (mΩ)',
+          data: refPoints,
+          borderColor: '#64748b',
+          backgroundColor: '#64748b',
+          borderDash: [5, 5],
+          showLine: true,
+          borderWidth: 1.5,
+          pointRadius: 1
+        });
+      }
+
+      AppState.charts.bodeMag = safeCreateChart('bodeMagnitudeChart', {
+        type: 'scatter',
+        data: { datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true, labels: { color: '#94a3b8', font: { size: 10 } } }
+          },
+          scales: {
+            x: {
+              type: 'logarithmic',
+              title: { display: true, text: 'Frequency (Hz)', color: '#94a3b8' },
+              ticks: { color: '#94a3b8', callback: (val) => val >= 1000 ? (val / 1000) + 'k' : val },
+              grid: { color: 'rgba(255,255,255,0.05)' }
+            },
+            y: { title: { display: true, text: '|Z| (mΩ)', color: '#94a3b8' }, ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+          }
+        }
+      });
+    }
+
+    function renderBodePhasePlot(spectrum, refSpectrum) {
+      const ctx = document.getElementById('bodePhaseChart');
+      if (!ctx) return;
+      if (AppState.charts.bodePhase) AppState.charts.bodePhase.destroy();
+
+      const currentPoints = (spectrum || []).map(pt => ({ x: pt.freq_hz, y: pt.phase_deg }));
+      const datasets = [{
+        label: 'Current Phase (°)',
+        data: currentPoints,
+        borderColor: '#a855f7',
+        backgroundColor: '#a855f7',
+        showLine: true,
+        borderWidth: 2,
+        pointRadius: 2,
+        tension: 0.3
+      }];
+
+      if (refSpectrum && refSpectrum.length > 0) {
+        const refPoints = refSpectrum.map(pt => ({ x: pt.freq_hz, y: pt.phase_deg }));
+        datasets.push({
+          label: 'Ref Phase (°)',
+          data: refPoints,
+          borderColor: '#64748b',
+          backgroundColor: '#64748b',
+          borderDash: [5, 5],
+          showLine: true,
+          borderWidth: 1.5,
+          pointRadius: 1
+        });
+      }
+
+      AppState.charts.bodePhase = safeCreateChart('bodePhaseChart', {
+        type: 'scatter',
+        data: { datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: true, labels: { color: '#94a3b8', font: { size: 10 } } }
+          },
+          scales: {
+            x: {
+              type: 'logarithmic',
+              title: { display: true, text: 'Frequency (Hz)', color: '#94a3b8' },
+              ticks: { color: '#94a3b8', callback: (val) => val >= 1000 ? (val / 1000) + 'k' : val },
+              grid: { color: 'rgba(255,255,255,0.05)' }
+            },
+            y: { title: { display: true, text: 'Phase (°)', color: '#94a3b8' }, ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+          }
+        }
+      });
+    }
+
+    function renderFingerprintPointsTable(points) {
+      const tbody = document.getElementById('fpPointsTableBody');
+      if (!tbody) return;
+      if (!points || points.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="3" style="padding: 8px; color: var(--text-muted);">No selected points available</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = points.map(pt => `
+        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+          <td style="padding: 6px; font-weight: 700; color: var(--cyan);">${pt.freq_hz >= 1000 ? (pt.freq_hz / 1000) + ' kHz' : pt.freq_hz + ' Hz'}</td>
+          <td style="padding: 6px;">${pt.z_mag_mohm.toFixed(2)} mΩ</td>
+          <td style="padding: 6px; color: ${pt.phase_deg < 0 ? 'var(--amber)' : 'var(--text-primary)'};">${pt.phase_deg.toFixed(2)}°</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderReferenceComparisonTable(comp) {
+      const tbody = document.getElementById('refComparisonTableBody');
+      if (!tbody) return;
+      if (!comp || comp.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" style="padding: 8px; color: var(--text-muted);">No comparison data</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = comp.map(item => {
+        const dev = item.deviation_pct;
+        const color = Math.abs(dev) > 20 ? 'var(--rose)' : (Math.abs(dev) > 10 ? 'var(--amber)' : 'var(--emerald)');
+        return `
+          <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <td style="padding: 8px; font-weight: 600;">${item.parameter}</td>
+            <td style="padding: 8px; color: var(--text-muted);">${item.reference_val} ${item.unit}</td>
+            <td style="padding: 8px; font-weight: 700; color: var(--cyan);">${item.current_val} ${item.unit}</td>
+            <td style="padding: 8px; font-weight: 700; color: ${color};">${dev > 0 ? '+' : ''}${dev.toFixed(1)}%</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderEisDiagnosticIndicators(indicators) {
+      const container = document.getElementById('eisHealthIndicatorsList');
+      if (!container) return;
+      if (!indicators || indicators.length === 0) {
+        container.innerHTML = `<div style="color: var(--text-muted);">No diagnostic indicators calculated.</div>`;
+        return;
+      }
+
+      container.innerHTML = indicators.map(ind => {
+        const statusColors = {
+          'GOOD': { border: 'var(--emerald)', text: 'var(--emerald)' },
+          'MODERATE': { border: 'var(--amber)', text: 'var(--amber)' },
+          'ELEVATED': { border: 'var(--rose)', text: 'var(--rose)' }
+        };
+        const st = statusColors[ind.status] || { border: 'var(--cyan)', text: 'var(--cyan)' };
+
+        return `
+          <div style="background: rgba(15,23,42,0.6); padding: 12px; border-radius: 8px; border-left: 3px solid ${st.border}; display: flex; flex-direction: column; gap: 4px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-weight: 700; color: var(--text-primary);">${ind.name}</span>
+              <span style="font-size: 0.7rem; font-weight: 800; color: ${st.text}; border: 1px solid ${st.border}; padding: 2px 6px; border-radius: 4px;">${ind.status}</span>
+            </div>
+            <div style="font-size: 1.1rem; font-family: var(--font-display); font-weight: 800; color: var(--cyan);">${ind.value}</div>
+            <div style="font-size: 0.74rem; color: var(--text-secondary);">${ind.description}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function fetchHealthRiskIntelligence() {
+      fetch('/api/health-risk')
+        .then(r => r.json())
+        .then(data => {
+          renderHealthRiskWorkstation(data);
+        })
+        .catch(err => {
+          console.warn("Health Risk API fetch fallback:", err);
+          fetchHealthAttributionFallback();
+        });
+    }
+
+    function fetchHealthAttributionFallback() {
+      const ctx = document.getElementById('healthAttributionChart');
+      if (!ctx) return;
+      if (AppState.charts.health) AppState.charts.health.destroy();
+      AppState.charts.health = safeCreateChart('healthAttributionChart', {
+        type: 'bar',
+        data: {
+          labels: ['Throughput_Ah', 'TempMean', 'CellVoltageImbalance', 'SOC', 'PackVoltage'],
+          datasets: [{
+            label: 'SOH Model Contribution (% SOH Impact)',
+            data: [-24.8, -1.0, -0.07, 0.035, 0.025],
+            backgroundColor: ['#ef4444', '#ef4444', '#f59e0b', '#10b981', '#10b981']
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y' }
+      });
+    }
+
+    function renderHealthRiskWorkstation(data) {
+      if (!data) return;
+
+      // 1. Hero KPI Cards
+      if (data.vitals && data.vitals.soh) {
+        document.getElementById('hrSohHero').innerText = `${data.vitals.soh.value}%`;
+        document.getElementById('hrSohTrendHero').innerText = data.vitals.soh.trend || '-0.42%/100c';
+      }
+      if (data.rul_uncertainty) {
+        document.getElementById('hrRulHero').innerText = data.rul_uncertainty.estimated_rul_cycles.toLocaleString();
+        document.getElementById('hrRulRangeHero').innerText = data.rul_uncertainty.range_cycles;
+        document.getElementById('hrConfidenceHero').innerText = `${data.rul_uncertainty.confidence_pct}%`;
+        const b = document.getElementById('auditConfidenceBadge');
+        if (b) b.innerText = `Confidence: ${data.rul_uncertainty.confidence_pct}%`;
+      }
+      if (data.anomaly_intelligence) {
+        document.getElementById('hrAnomalyHero').innerText = data.anomaly_intelligence.index;
+        const statusEl = document.getElementById('hrAnomalyStatusHero');
+        if (statusEl) {
+          statusEl.innerText = `${data.anomaly_intelligence.status} ANOMALY RISK`;
+          statusEl.className = `status-tag ${data.anomaly_intelligence.status.toLowerCase()}`;
+        }
+        const badge = document.getElementById('anomalyIndexBadge');
+        if (badge) badge.innerText = `Index: ${data.anomaly_intelligence.index} (${data.anomaly_intelligence.status})`;
+      }
+      if (data.risk_intelligence) {
+        document.getElementById('hrRiskHero').innerText = data.risk_intelligence.overall_risk;
+        const b = document.getElementById('riskOverallBadge');
+        if (b) b.innerText = `${data.risk_intelligence.overall_risk} RISK`;
+        const pos = data.risk_intelligence.matrix_position || { severity: 'Medium', probability: 'Low' };
+        document.getElementById('hrRiskMatrixHero').innerText = `${pos.severity} Sev / ${pos.probability} Prob`;
+        renderRiskMatrixTable(pos);
+      }
+
+      // 2. Battery Vitals Grid
+      renderVitalsGrid(data.vitals);
+
+      // 3. Degradation Profile & Rate
+      if (data.degradation_analysis) {
+        const b = document.getElementById('dominantPatternBadge');
+        if (b) b.innerText = data.degradation_analysis.dominant_pattern || 'Resistance-associated';
+        renderDegradationBars(data.degradation_analysis.profile);
+      }
+      if (data.degradation_rate) {
+        document.getElementById('degRateSubtitle').innerText = `SOH ${data.degradation_rate.previous_soh}% → ${data.degradation_rate.current_soh}% (${data.degradation_rate.change > 0 ? '+' : ''}${data.degradation_rate.change}%)`;
+        document.getElementById('degPaceText').innerText = data.degradation_rate.estimated_trend;
+        renderDegRateChart(data.degradation_rate);
+      }
+
+      // 4. Virtual Battery System Topology
+      renderVirtualSystemTopology(data);
+
+      // 5. Explainable SOH & Comparison Table
+      if (data.explainability) {
+        renderHealthAttributionChart(data.explainability.attributions);
+      }
+      if (data.comparison) {
+        renderComparisonTable(data.comparison);
+      }
+
+      // 6. Anomaly Sub-grid & Event Timeline
+      if (data.anomaly_intelligence) {
+        renderAnomalySubGrid(data.anomaly_intelligence.sub_indices);
+        renderEventTimeline(data.anomaly_intelligence.event_timeline);
+      }
+
+      // 7. Thermal & Electrical Diagnostics
+      if (data.thermal_behaviour) {
+        document.getElementById('thermalRateSubtitle').innerText = `dT/dt = +${data.thermal_behaviour.rise_rate_c_per_min} °C/min`;
+        document.getElementById('thMeanText').innerText = `${data.thermal_behaviour.mean_c} °C`;
+        document.getElementById('thMaxText').innerText = `${data.thermal_behaviour.max_c} °C`;
+        document.getElementById('thSpreadText').innerText = `${data.thermal_behaviour.spread_c} °C`;
+        renderThermalDiagnosticChart(data.thermal_behaviour);
+      }
+      if (data.electrical_behaviour) {
+        document.getElementById('elVoltStabText').innerText = data.electrical_behaviour.voltage_stability;
+        document.getElementById('elCurrStabText').innerText = data.electrical_behaviour.current_stability;
+        renderElectricalDiagnosticChart(data.electrical_behaviour);
+      }
+
+      // 8. EIS Health Indicators
+      if (data.eis_health_indicators) {
+        const eis = data.eis_health_indicators;
+        document.getElementById('eisR0Val').innerText = `${eis.r0_mohm} mΩ`;
+        document.getElementById('eisR0Dev').innerText = `Baseline ${eis.r0_baseline_mohm} mΩ (${eis.r0_deviation_pct > 0 ? '+' : ''}${eis.r0_deviation_pct}%)`;
+        document.getElementById('eisRctVal').innerText = `${eis.rct_mohm} mΩ`;
+        document.getElementById('eisRctDev').innerText = `Baseline ${eis.rct_baseline_mohm} mΩ (${eis.rct_deviation_pct > 0 ? '+' : ''}${eis.rct_deviation_pct}%)`;
+        document.getElementById('eisZVal').innerText = `${eis.z_lowfreq_mohm} mΩ`;
+        document.getElementById('eisPhaseVal').innerText = `Phase Angle: ${eis.phase_lowfreq_deg}°`;
+        document.getElementById('eisCdlVal').innerText = `${eis.cdl_farad} F`;
+        document.getElementById('eisHealthExplanation').innerText = eis.health_explanation;
+      }
+
+      // 9. Risk Categories & Early Warnings
+      if (data.risk_intelligence && data.risk_intelligence.categories) {
+        renderRiskCategories(data.risk_intelligence.categories);
+      }
+      if (data.early_warnings) {
+        renderEarlyWarnings(data.early_warnings);
+      }
+
+      // 10. Future Health Trajectory
+      renderFutureHealthChart(data);
+
+      // 11. Limiting Reasons & Diagnostic Actions
+      if (data.health_confidence && data.health_confidence.limiting_reasons) {
+        let html = '';
+        data.health_confidence.limiting_reasons.forEach(r => html += `<li>${r}</li>`);
+        document.getElementById('limitingReasonsList').innerHTML = html;
+      }
+      if (data.diagnostic_actions) {
+        renderDiagnosticActions(data.diagnostic_actions);
+      }
+    }
+
+    function renderVitalsGrid(vitals) {
+      const container = document.getElementById('vitalsGrid');
+      if (!container || !vitals) return;
+
+      const keys = [
+        { id: 'soh', title: 'STATE OF HEALTH (SOH)', icon: '⚡' },
+        { id: 'soc', title: 'STATE OF CHARGE (SOC)', icon: '🔋' },
+        { id: 'rul', title: 'REMAINING USEFUL LIFE', icon: '⏱' },
+        { id: 'temperature', title: 'PACK TEMPERATURE', icon: '🌡' },
+        { id: 'internal_resistance', title: 'INTERNAL RESISTANCE (R₀)', icon: 'Ω' },
+        { id: 'anomaly_index', title: 'ANOMALY INDEX', icon: '⚠️' },
+        { id: 'degradation_rate', title: 'DEGRADATION RATE', icon: '📉' },
+        { id: 'operating_state', title: 'OPERATING STATE', icon: '⚡' }
+      ];
+
+      const provClassMap = {
+        'REAL CAN DATA': 'prov-real',
+        'REAL CAN / DERIVED': 'prov-real',
+        'DERIVED': 'prov-derived',
+        'SIMULATED EIS': 'prov-simulated',
+        'MODEL ESTIMATE': 'prov-model'
+      };
+
+      let html = '';
+      keys.forEach(k => {
+        const item = vitals[k.id];
+        if (!item) {
+          html += `
+            <div class="vital-card">
+              <div class="vital-title"><span>${k.title}</span><span class="status-tag critical">NOT AVAIL</span></div>
+              <div class="vital-value" style="font-size: 1.1rem; color: var(--text-muted);">Not available from current telemetry</div>
+            </div>
+          `;
+          return;
+        }
+
+        const pClass = provClassMap[item.provenance] || 'prov-derived';
+        const stClass = (item.status || 'NORMAL').toLowerCase();
+
+        html += `
+          <div class="vital-card">
+            <div class="vital-title">
+              <span>${k.title}</span>
+              <span class="status-tag ${stClass}">${item.status}</span>
+            </div>
+            <div class="vital-value">
+              <span>${item.value}</span>
+              <span class="vital-unit">${item.unit}</span>
+            </div>
+            <div style="font-size: 0.73rem; color: var(--text-secondary); margin-bottom: 6px;">${item.explanation}</div>
+            <div class="vital-footer">
+              <span style="color: var(--cyan); font-weight: 600;">${item.trend}</span>
+              <span class="prov-badge ${pClass}">${item.provenance}</span>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function renderDegradationBars(profile) {
+      const container = document.getElementById('degradationProfileBars');
+      if (!container || !profile) return;
+
+      const items = [
+        { label: 'Capacity Fade', pct: profile.capacity_fade_pct || 45.0, color: 'var(--cyan)' },
+        { label: 'Resistance Growth', pct: profile.resistance_growth_pct || 30.0, color: 'var(--purple)' },
+        { label: 'Thermal Stress', pct: profile.thermal_stress_pct || 15.0, color: 'var(--amber)' },
+        { label: 'Electrical Stress', pct: profile.electrical_stress_pct || 10.0, color: 'var(--teal)' }
+      ];
+
+      let html = '';
+      items.forEach(it => {
+        html += `
+          <div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.78rem; margin-bottom: 4px;">
+              <span style="color: var(--text-primary); font-weight: 600;">${it.label}</span>
+              <b style="color: ${it.color};">${it.pct}%</b>
+            </div>
+            <div style="background: rgba(15,23,42,0.8); height: 8px; border-radius: 4px; overflow: hidden;">
+              <div style="width: ${it.pct}%; height: 100%; background: ${it.color}; border-radius: 4px; transition: width 0.6s ease;"></div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function renderDegRateChart(degData) {
+      const ctx = document.getElementById('degRateChart');
+      if (!ctx) return;
+      if (AppState.charts.degRate) AppState.charts.degRate.destroy();
+
+      const labels = ['-500c', '-400c', '-300c', '-200c', '-100c', 'Current'];
+      const cur = degData.current_soh || 88.4;
+      const prev = degData.previous_soh || 89.7;
+      const sohPoints = [prev + 2.0, prev + 1.5, prev + 1.0, prev + 0.5, prev, cur];
+      const r0Points = [21.5, 22.1, 22.8, 23.5, 24.5, 25.3];
+
+      AppState.charts.degRate = safeCreateChart('degRateChart', {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            { label: 'SOH Trajectory (%)', data: sohPoints, borderColor: '#00f2fe', backgroundColor: 'rgba(0,242,254,0.1)', yAxisID: 'y' },
+            { label: 'Ohmic R₀ (mΩ)', data: r0Points, borderColor: '#8b5cf6', backgroundColor: 'transparent', borderDash: [4, 4], yAxisID: 'y1' }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { ticks: { color: '#94a3b8' } },
+            y: { ticks: { color: '#00f2fe' }, min: 80, max: 95 },
+            y1: { position: 'right', ticks: { color: '#8b5cf6' }, min: 15, max: 30, grid: { drawOnChartArea: false } }
+          }
+        }
+      });
+    }
+
+    function renderVirtualSystemTopology(data) {
+      const grid = document.getElementById('virtualPackGrid');
+      if (!grid) return;
+      let html = '';
+      const soh = data.vitals && data.vitals.soh ? data.vitals.soh.value : 88.4;
+      const temp = data.vitals && data.vitals.temperature ? data.vitals.temperature.value : 25.3;
+
+      for (let i = 1; i <= 8; i++) {
+        const modTemp = (temp + (Math.sin(i) * 0.8)).toFixed(1);
+        const modR0 = (25.1 + (Math.cos(i) * 0.4)).toFixed(1);
+        html += `
+          <div style="background: rgba(15,23,42,0.8); border: 1px solid var(--border-subtle); padding: 12px; border-radius: 8px; text-align: center;">
+            <div style="font-size: 0.68rem; color: var(--text-muted); font-weight: 700;">MODULE BLOCK ${i}</div>
+            <div style="font-family: var(--font-display); font-weight: 800; color: var(--cyan); font-size: 1.1rem; margin-top: 4px;">${soh}% SOH</div>
+            <div style="font-size: 0.72rem; color: var(--amber); margin-top: 2px;">${modTemp} °C | ${modR0} mΩ</div>
+            <div style="font-size: 0.65rem; color: var(--emerald); margin-top: 4px; font-weight: 700;">HEALTHY SYSTEM</div>
+          </div>
+        `;
+      }
+      grid.innerHTML = html;
+    }
+
+    function renderHealthAttributionChart(attributions) {
+      const ctx = document.getElementById('healthAttributionChart');
+      if (!ctx) return;
+
+      const labels = [];
+      const values = [];
+      const colors = [];
+
+      if (attributions && attributions.length > 0) {
+        attributions.forEach(item => {
+          labels.push(item.feature_name);
+          values.push(item.model_contribution_pct);
+          colors.push(item.model_contribution_pct < 0 ? '#ef4444' : '#10b981');
+        });
+      } else {
+        labels.push('Throughput_Ah', 'TempMean', 'CellVoltageImbalance', 'SOC', 'PackVoltage');
+        values.push(-24.8, -1.0, -0.07, 0.035, 0.025);
+        colors.push('#ef4444', '#ef4444', '#f59e0b', '#10b981', '#10b981');
+      }
+
+      if (AppState.charts.health) AppState.charts.health.destroy();
+
+      AppState.charts.health = safeCreateChart('healthAttributionChart', {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'SOH Model Feature Influence (% Impact)',
+            data: values,
+            backgroundColor: colors,
+            borderColor: colors
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          indexAxis: 'y',
+          scales: {
+            x: { ticks: { color: '#94a3b8' } },
+            y: { ticks: { color: '#94a3b8' } }
+          }
+        }
+      });
+    }
+
+    function renderComparisonTable(comp) {
+      const tbody = document.getElementById('comparisonTableBody');
+      if (!tbody || !comp) return;
+
+      const keys = [
+        { id: 'soh', label: 'State of Health (SOH)' },
+        { id: 'temperature', label: 'Pack Temperature' },
+        { id: 'r0', label: 'Ohmic Resistance (R₀)' },
+        { id: 'anomaly_index', label: 'Battery Anomaly Index' }
+      ];
+
+      let html = '';
+      keys.forEach(k => {
+        const item = comp[k.id] || { previous: 'N/A', current: 'N/A', change: '0' };
+        html += `
+          <tr style="border-bottom: 1px solid var(--border-subtle);">
+            <td style="padding: 8px; color: var(--text-primary); font-weight: 600;">${k.label}</td>
+            <td style="padding: 8px; color: var(--text-secondary);">${item.previous}</td>
+            <td style="padding: 8px; color: var(--cyan); font-weight: 700;">${item.current}</td>
+            <td style="padding: 8px; color: ${item.change.startsWith('-') ? 'var(--crimson)' : 'var(--emerald)'}; font-weight: 700;">${item.change}</td>
+          </tr>
+        `;
+      });
+
+      tbody.innerHTML = html;
+    }
+
+    function renderAnomalySubGrid(subIndices) {
+      const grid = document.getElementById('anomalySubGrid');
+      if (!grid || !subIndices) return;
+
+      const keys = [
+        { id: 'electrical', label: 'Electrical Anomaly', icon: '⚡' },
+        { id: 'thermal', label: 'Thermal Anomaly', icon: '🌡' },
+        { id: 'eis', label: 'EIS Anomaly', icon: 'Ω' },
+        { id: 'operational', label: 'Operational Anomaly', icon: '🔄' }
+      ];
+
+      let html = '';
+      keys.forEach(k => {
+        const item = subIndices[k.id] || { score: 10, status: 'LOW' };
+        const stClass = (item.status || 'LOW').toLowerCase();
+        html += `
+          <div style="background: rgba(15,23,42,0.6); padding: 12px; border-radius: 8px; border: 1px solid var(--border-subtle);">
+            <div style="display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">
+              <span>${k.label}</span>
+              <span class="status-tag ${stClass}">${item.status}</span>
+            </div>
+            <div style="font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; color: var(--cyan); margin-top: 4px;">${item.score}</div>
+          </div>
+        `;
+      });
+
+      grid.innerHTML = html;
+    }
+
+    function renderEventTimeline(timeline) {
+      const container = document.getElementById('eventTimelineList');
+      if (!container || !timeline) return;
+
+      let html = '';
+      timeline.forEach((ev, idx) => {
+        const sevClass = (ev.severity || 'NORMAL').toLowerCase();
+        html += `
+          <div class="timeline-item" onclick="highlightTimelineEvent(${idx})">
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 4px;">
+              <b style="color: var(--cyan);">${ev.timestamp} — ${ev.parameter}</b>
+              <span class="status-tag ${sevClass}">${ev.severity}</span>
+            </div>
+            <div style="font-size: 0.76rem; color: var(--text-primary);">${ev.explanation}</div>
+            <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;">Observed: ${ev.observed_value} | Threshold: ${ev.threshold_value}</div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function highlightTimelineEvent(idx) {
+      document.querySelectorAll('.timeline-item').forEach((el, i) => {
+        if (i === idx) el.classList.add('active');
+        else el.classList.remove('active');
+      });
+    }
+
+    function renderThermalDiagnosticChart(thermal) {
+      const ctx = document.getElementById('thermalDiagnosticChart');
+      if (!ctx) return;
+      if (AppState.charts.thermalDiag) AppState.charts.thermalDiag.destroy();
+
+      const mean = thermal.mean_c || 25.3;
+      const labels = ['10:40', '10:45', '10:50', '10:55', '11:00', '11:05', '11:10'];
+      const temps = [mean - 1.2, mean - 0.8, mean + 2.0, mean + 3.2, mean + 1.0, mean + 0.2, mean];
+      const dtdt = [0.05, 0.08, 0.56, 0.24, -0.40, -0.16, -0.04];
+
+      AppState.charts.thermalDiag = safeCreateChart('thermalDiagnosticChart', {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            { label: 'Pack Temp (°C)', data: temps, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', fill: true, yAxisID: 'y' },
+            { label: 'dT/dt Rate (°C/min)', data: dtdt, borderColor: '#00f2fe', backgroundColor: 'transparent', borderDash: [3, 3], yAxisID: 'y1' }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { ticks: { color: '#94a3b8' } },
+            y: { ticks: { color: '#f59e0b' } },
+            y1: { position: 'right', ticks: { color: '#00f2fe' }, grid: { drawOnChartArea: false } }
+          }
+        }
+      });
+    }
+
+    function renderElectricalDiagnosticChart(electrical) {
+      const ctx = document.getElementById('electricalDiagnosticChart');
+      if (!ctx) return;
+      if (AppState.charts.electricalDiag) AppState.charts.electricalDiag.destroy();
+
+      const labels = ['10:40', '10:45', '10:50', '10:55', '11:00', '11:05', '11:10'];
+      const voltage = [31.5, 31.4, 30.8, 30.2, 31.0, 31.16, 31.16];
+      const current = [1.2, 2.5, 24.0, 42.0, 8.0, 1.9, 1.9];
+
+      AppState.charts.electricalDiag = safeCreateChart('electricalDiagnosticChart', {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            { label: 'Pack Voltage (V)', data: voltage, borderColor: '#10b981', yAxisID: 'y' },
+            { label: 'Pack Current (A)', data: current, borderColor: '#06b6d4', yAxisID: 'y1' }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { ticks: { color: '#94a3b8' } },
+            y: { ticks: { color: '#10b981' } },
+            y1: { position: 'right', ticks: { color: '#06b6d4' }, grid: { drawOnChartArea: false } }
+          }
+        }
+      });
+    }
+
+    function renderRiskMatrixTable(matrixPos) {
+      for (let r = 0; r <= 3; r++) {
+        for (let c = 1; c <= 3; c++) {
+          const cell = document.getElementById(`rm-${r}-${c}`);
+          if (cell) {
+            cell.className = '';
+            cell.innerHTML = '';
+          }
+        }
+      }
+
+      let row = 0;
+      if (matrixPos.severity === 'Critical') row = 3;
+      else if (matrixPos.severity === 'High') row = 2;
+      else if (matrixPos.severity === 'Medium') row = 1;
+      else row = 0;
+
+      let col = 1;
+      if (matrixPos.probability === 'High') col = 3;
+      else if (matrixPos.probability === 'Medium') col = 2;
+      else col = 1;
+
+      const targetCell = document.getElementById(`rm-${row}-${col}`);
+      if (targetCell) {
+        targetCell.className = 'active-cell';
+        targetCell.innerHTML = '<span class="risk-marker"></span>';
+      }
+    }
+
+    function renderRiskCategories(categories) {
+      const container = document.getElementById('riskCategoriesList');
+      if (!container || !categories) return;
+
+      let html = '';
+      for (const [key, item] of Object.entries(categories)) {
+        const label = key.replace('_', ' ').toUpperCase();
+        const stClass = (item.level || 'LOW').toLowerCase();
+        html += `
+          <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(15,23,42,0.6); padding: 8px 12px; border-radius: 6px;">
+            <span>${label}:</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 0.72rem; color: var(--text-muted);">${item.evidence}</span>
+              <span class="status-tag ${stClass}">${item.level}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      container.innerHTML = html;
+    }
+
+    function renderEarlyWarnings(warnings) {
+      const container = document.getElementById('earlyWarningsList');
+      if (!container || !warnings) return;
+
+      let html = '';
+      warnings.forEach(w => {
+        const stClass = (w.severity || 'NORMAL').toLowerCase();
+        html += `
+          <div style="background: rgba(15,23,42,0.7); border: 1px solid var(--border-subtle); border-left: 3px solid ${w.severity === 'WARNING' ? 'var(--amber)' : 'var(--cyan)'}; border-radius: 8px; padding: 12px;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.76rem;">
+              <b style="color: var(--text-primary);">${w.parameter}</b>
+              <span class="status-tag ${stClass}">${w.severity}</span>
+            </div>
+            <div style="font-size: 0.74rem; color: var(--text-secondary); margin-top: 4px;">${w.explanation}</div>
+            <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 4px;">Evidence: ${w.evidence}</div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function renderFutureHealthChart(data) {
+      const ctx = document.getElementById('futureHealthChart');
+      if (!ctx) return;
+      if (AppState.charts.futureHealth) AppState.charts.futureHealth.destroy();
+
+      const soh = data.vitals && data.vitals.soh ? data.vitals.soh.value : 88.4;
+      const labels = ['Year 0', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'];
+      const nominal = [soh, soh - 2.2, soh - 4.5, soh - 6.8, soh - 9.2, soh - 11.5];
+      const upper = nominal.map(v => Math.min(100, v + 2.5));
+      const lower = nominal.map(v => Math.max(50, v - 3.0));
+
+      AppState.charts.futureHealth = safeCreateChart('futureHealthChart', {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            { label: 'Nominal SOH Trajectory (%)', data: nominal, borderColor: '#00f2fe', backgroundColor: 'rgba(0,242,254,0.15)', fill: false },
+            { label: 'Upper Confidence Bound (+95%)', data: upper, borderColor: 'rgba(16,185,129,0.5)', borderDash: [4, 4], fill: false },
+            { label: 'Lower Confidence Bound (-95%)', data: lower, borderColor: 'rgba(239,68,68,0.5)', borderDash: [4, 4], fill: false }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { ticks: { color: '#94a3b8' } },
+            y: { ticks: { color: '#00f2fe' }, min: 50, max: 100 }
+          }
+        }
+      });
+    }
+
+    function renderDiagnosticActions(actions) {
+      const container = document.getElementById('diagnosticActionsGrid');
+      if (!container || !actions) return;
+
+      const priorityMap = {
+        'HIGH': 'critical',
+        'MEDIUM': 'warning',
+        'LOW': 'watch'
+      };
+
+      let html = '';
+      actions.forEach(act => {
+        const pClass = priorityMap[act.priority] || 'normal';
+        html += `
+          <div style="background: rgba(15,23,42,0.8); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="status-tag ${pClass}">PRIORITY: ${act.priority}</span>
+                <span style="font-size: 0.7rem; color: var(--text-muted);">${act.target_component}</span>
+              </div>
+              <div style="font-weight: 700; color: var(--cyan); font-size: 0.88rem; margin-top: 8px;">${act.action}</div>
+              <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 6px;">${act.rationale}</div>
+            </div>
+            <div style="margin-top: 12px; font-size: 0.68rem; color: var(--emerald); font-weight: 700;">ENGINEERING DIAGNOSTIC INVESTIGATION</div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function updateSimulation() {
+      const sohEl = document.getElementById('simSohSlider');
+      if (!sohEl) return;
+
+      const soh = parseFloat(sohEl.value) / 100.0;
+      const temp = parseFloat(document.getElementById('simTempSlider').value);
+      const crate = parseFloat(document.getElementById('simCrateSlider').value) / 10.0;
+      const app = document.getElementById('simAppSelect').value;
+
+      document.getElementById('simSohLabel').innerText = `${(soh * 100).toFixed(0)}%`;
+      document.getElementById('simTempLabel').innerText = `${temp.toFixed(1)} °C`;
+      document.getElementById('simCrateLabel').innerText = `${crate.toFixed(2)} C`;
+
+      fetch(`/api/what-if?soh=${soh}&temp=${temp}&crate=${crate}&app=${encodeURIComponent(app)}&years=5`)
+        .then(r => r.json())
+        .then(res => {
+          const traj = res.trajectory || [
+            { year: 0, soh_pct: soh * 100 },
+            { year: 1, soh_pct: soh * 100 - 2.2 },
+            { year: 2, soh_pct: soh * 100 - 4.5 },
+            { year: 3, soh_pct: soh * 100 - 6.8 },
+            { year: 4, soh_pct: soh * 100 - 9.2 },
+            { year: 5, soh_pct: soh * 100 - 11.5 }
+          ];
+          const labels = traj.map(t => `Year ${t.year}`);
+          const sohData = traj.map(t => t.soh_pct);
+
+          if (AppState.charts.simulator) AppState.charts.simulator.destroy();
+
+          AppState.charts.simulator = safeCreateChart('simulatorChart', {
+            type: 'line',
+            data: {
+              labels: labels,
+              datasets: [{
+                label: `Projected SOH Trajectory (${app})`,
+                data: sohData,
+                borderColor: '#00f2fe',
+                backgroundColor: 'rgba(0,242,254,0.15)',
+                fill: true
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                x: { ticks: { color: '#94a3b8' } },
+                y: { ticks: { color: '#00f2fe' }, min: 50, max: 100 }
+              }
+            }
+          });
+        })
+        .catch(err => {
+          console.warn("Simulator API fetch fallback:", err);
+          if (AppState.charts.simulator) AppState.charts.simulator.destroy();
+          const defaultTraj = [soh * 100, soh * 100 - 2.2, soh * 100 - 4.5, soh * 100 - 6.8, soh * 100 - 9.2, soh * 100 - 11.5];
+          AppState.charts.simulator = safeCreateChart('simulatorChart', {
+            type: 'line',
+            data: {
+              labels: ['Year 0', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5'],
+              datasets: [{ label: `Projected SOH (${app})`, data: defaultTraj, borderColor: '#00f2fe' }]
+            },
+            options: { responsive: true, maintainAspectRatio: false }
+          });
+        });
+    }
+
+    function parseCSV(text) {
+      const lines = text.trim().split('\n');
+      if (lines.length < 2) return [];
+      const headers = lines[0].split(',').map(h => h.trim());
+      const rows = [];
+      for (let i = 1; i < lines.length; i++) {
+        const parts = lines[i].split(',');
+        if (parts.length < headers.length) continue;
+        const obj = {};
+        headers.forEach((h, idx) => {
+          const val = parts[idx].trim();
+          const num = parseFloat(val);
+          obj[h] = isNaN(num) ? val : num;
+        });
+        rows.push(obj);
+      }
+      return rows;
+    }
+
+    function generateMockTelemetry() {
+      const mock = [];
+      for (let i = 0; i < 100; i++) {
+        const sinVal = Math.sin(i / 10.0);
+        mock.push({
+          SOH_used: 0.865 - (i * 0.0001),
+          SOC: 80.0 - (i * 0.1),
+          PackVoltage: 31.2 + (sinVal * 0.5),
+          PackCurrent: 2.0 + (sinVal * 1.5),
+          TempMean: 25.0 + (i * 0.05),
+          CellVoltageImbalance: 0.005 + (Math.abs(sinVal) * 0.003)
+        });
+      }
+      return mock;
+    }
+
+    function loadTelemetryCSV(url) {
+      fetch(url)
+        .then(r => {
+          if (!r.ok) throw new Error(`HTTP ${r.status}`);
+          return r.text();
+        })
+        .then(text => {
+          AppState.telemetryData = parseCSV(text);
+          if (AppState.telemetryData.length > 0) {
+            hideErrorBanner();
+            renderFrame(0);
+          } else {
+            throw new Error("Empty CSV data");
+          }
+        })
+        .catch(err => {
+          console.warn('CSV load fallback triggered:', err);
+          AppState.telemetryData = generateMockTelemetry();
+          renderFrame(0);
+        });
+    }
+
+    function startPlayback() {
+      if (AppState.timer) clearInterval(AppState.timer);
+      AppState.timer = setInterval(() => {
+        if (!AppState.isPlaying || !AppState.telemetryData || AppState.telemetryData.length === 0) return;
+        AppState.currentIndex = (AppState.currentIndex + AppState.playbackSpeed) % AppState.telemetryData.length;
+        renderFrame(AppState.currentIndex);
+      }, 100);
+    }
+
+    function togglePlayPause() {
+      AppState.isPlaying = !AppState.isPlaying;
+      const playIcon = document.getElementById('playIcon');
+      const pauseIcon = document.getElementById('pauseIcon');
+      if (playIcon) playIcon.style.display = AppState.isPlaying ? 'none' : 'block';
+      if (pauseIcon) pauseIcon.style.display = AppState.isPlaying ? 'block' : 'none';
+    }
+
+    function setSpeed(spd, btn) {
+      AppState.playbackSpeed = spd;
+      document.querySelectorAll('.speed-pill').forEach(p => p.classList.remove('active'));
+      if (btn) {
+        btn.classList.add('active');
+      } else if (typeof event !== 'undefined' && event && event.target) {
+        event.target.classList.add('active');
+      }
+    }
+
+    function onSliderScrub(val) {
+      if (!AppState.telemetryData || AppState.telemetryData.length === 0) return;
+      AppState.currentIndex = Math.floor((val / 100.0) * (AppState.telemetryData.length - 1));
+      renderFrame(AppState.currentIndex);
+    }
+
+    function onDatasetSelected(val) {
+      loadTelemetryCSV(val);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadTelemetryCSV('output/realtime_fused_log.csv');
+      startPlayback();
+
+      // Dynamically set Passport QR Code to encode the Battery Certificate URL
+      const qrImg = document.getElementById('passportQrImg');
+      if (qrImg) {
+        const certUrl = (window.location.protocol.startsWith('http') ? window.location.origin : 'http://localhost:8050') + '/api/certificate';
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=${encodeURIComponent(certUrl)}`;
+      }
+    });
+  </script>
+</body>
+
+</html>
